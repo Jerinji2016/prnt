@@ -1,20 +1,17 @@
 import 'dart:typed_data';
 
-import 'package:esc_pos_utils_plus/esc_pos_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:pos_printer_manager/models/pos_printer.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
 import 'package:prnt/logger/logger.dart';
 import 'package:provider/provider.dart';
-import 'package:webcontent_converter/webcontent_converter.dart';
 
 import 'connection_adapters/bluetooth_adapter.dart';
 import 'connection_adapters/impl.dart';
 import 'connection_adapters/network_adapter.dart';
 import 'connection_adapters/usb_adapter.dart';
 import 'helpers/demo.dart';
-import 'helpers/service.dart';
 import 'logger/screen.dart';
 
 enum PrinterConnectionType {
@@ -277,25 +274,15 @@ class _BillTestState extends State<BillTest> {
   }
 
   void load() async {
-    final content = Demo.getShortReceiptContent();
-    final bytes = await WebcontentConverter.contentToImage(
-      content: content,
-      executablePath: WebViewHelper.executablePath(),
-    );
-    final service = ESCPrinterService(bytes);
-    imageBytes = await service.getBytes() as Uint8List;
+    debugPrint("_BillTestState.load: ");
+    imageBytes = Uint8List.fromList(await testTicket());
+    debugPrint("_BillTestState.load: ");
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    CapabilityProfile.getAvailableProfiles().then((x) {
-      x.forEach((element) {
-        debugPrint("_BillTestState.build: $element");
-      });
-    });
-
-    if (image == null) {
+    if (imageBytes == null) {
       return const Text("Nothing yet");
     }
     return SizedBox(
