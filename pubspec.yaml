@@ -20,6 +20,8 @@ dependencies:
   webcontent_converter: ^0.0.8+3
   image: ^4.1.3
   provider: ^6.0.5
+  redis: ^4.0.0
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

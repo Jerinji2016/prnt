@@ -1,10 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:pos_printer_manager/models/pos_printer.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
-import 'package:webcontent_converter/webcontent_converter.dart';
 
 import '../helpers/demo.dart';
-import '../helpers/service.dart';
 import '../helpers/types.dart';
 import '../logger/logger.dart';
 
@@ -16,13 +14,13 @@ abstract class IPrinterConnectionAdapters<T extends POSPrinter, X extends Printe
   Future<PrinterManager> connect(T printer);
 
   Future<void> dispatchPrint(X printerManager) async {
-    final content = Demo.getShortReceiptContent();
-    final bytes = await WebcontentConverter.contentToImage(
-      content: content,
-      executablePath: WebViewHelper.executablePath(),
-    );
-    final service = ESCPrinterService(bytes);
-    final data = await service.getBytes();
+    // final content = Demo.getShortReceiptContent();
+    // final bytes = await WebcontentConverter.contentToImage(
+    //   content: content,
+    //   executablePath: WebViewHelper.executablePath(),
+    // );
+    // final service = ESCPrinterService(bytes);
+    final data = await testTicket();
 
     debugPrint("BluetoothAdapter.dispatchPrint: IS CONNECTED: ${printerManager.isConnected}");
     Logger.instance.debug("IS CONNECTED: ${printerManager.isConnected}");
