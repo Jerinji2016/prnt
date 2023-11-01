@@ -55,6 +55,16 @@ class Home extends StatelessWidget {
       body: const SingleChildScrollView(
         child: Column(
           children: [
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.0),
+              child: Text(
+                "Printer Service",
+                style: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
             PrinterConnectionPanel(
               type: PrinterConnectionType.bluetooth,
             ),
@@ -64,7 +74,6 @@ class Home extends StatelessWidget {
             PrinterConnectionPanel(
               type: PrinterConnectionType.usb,
             ),
-            BillTest(),
           ],
         ),
       ),
@@ -252,42 +261,6 @@ class _PrinterConnectionPanelState extends State<PrinterConnectionPanel> with Pr
           ],
         ),
       ),
-    );
-  }
-}
-
-class BillTest extends StatefulWidget {
-  const BillTest({Key? key}) : super(key: key);
-
-  @override
-  State<BillTest> createState() => _BillTestState();
-}
-
-class _BillTestState extends State<BillTest> {
-  Image? image;
-  Uint8List? imageBytes;
-
-  @override
-  void initState() {
-    super.initState();
-    load();
-  }
-
-  void load() async {
-    debugPrint("_BillTestState.load: ");
-    imageBytes = Uint8List.fromList(await testTicket());
-    debugPrint("_BillTestState.load: ");
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (imageBytes == null) {
-      return const Text("Nothing yet");
-    }
-    return SizedBox(
-      height: 300,
-      child: Image.memory(imageBytes!),
     );
   }
 }
