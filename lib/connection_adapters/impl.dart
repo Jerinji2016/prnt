@@ -13,16 +13,8 @@ abstract class IPrinterConnectionAdapters<T extends POSPrinter, X extends Printe
 
   Future<PrinterManager> connect(T printer);
 
-  Future<void> dispatchPrint(X printerManager) async {
-    // final content = Demo.getShortReceiptContent();
-    // final bytes = await WebcontentConverter.contentToImage(
-    //   content: content,
-    //   executablePath: WebViewHelper.executablePath(),
-    // );
-    // final service = ESCPrinterService(bytes);
-    final data = await testTicket();
-
-    debugPrint("BluetoothAdapter.dispatchPrint: IS CONNECTED: ${printerManager.isConnected}");
+  Future<void> dispatchPrint(X printerManager, List<int> data) async {
+    debugPrint("IPrinterConnectionAdapters.dispatchPrint: IS CONNECTED: ${printerManager.isConnected}");
     Logger.instance.debug("IS CONNECTED: ${printerManager.isConnected}");
 
     final conn = await printerManager.writeBytes(data, isDisconnect: false);
@@ -77,11 +69,12 @@ mixin class PrinterConnectionMixin<X extends PrinterManager> implements IPrinter
   }
 
   @override
-  Future<void> dispatchPrint([PrinterManager? printerManager]) {
+  Future<void> dispatchPrint([PrinterManager? printerManager, List<int>? data]) async {
+    final data = await testTicket();
     if ((viewModal.printerManager ?? printerManager) == null) {
       Logger.instance.error("Not connected to printer");
       throw "Not connected to printer";
     }
-    return _adapter.dispatchPrint(viewModal.printerManager!);
+    return _adapter.dispatchPrint(viewModal.printerManager!, data);
   }
 }

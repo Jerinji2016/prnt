@@ -1,7 +1,8 @@
-import 'package:pos_printer_manager/models/bluetooth_printer.dart';
-import 'package:pos_printer_manager/models/network_printer.dart';
 import 'package:pos_printer_manager/models/pos_printer.dart';
-import 'package:pos_printer_manager/models/usb_printer.dart';
+import 'package:pos_printer_manager/pos_printer_manager.dart';
+import 'package:pos_printer_manager/services/printer_manager.dart';
+
+import '../ui/home.dart';
 
 typedef POSPrinterList = List<POSPrinter>;
 typedef POSPrinterIterable = Iterable<POSPrinter>;
@@ -14,3 +15,5 @@ typedef NetworkPrinterIterable = Iterable<NetWorkPrinter>;
 
 typedef USBPrinterList = List<USBPrinter>;
 typedef USBPrinterIterable = Iterable<USBPrinter>;
+
+typedef OnPrinterSelected = void Function(PrinterConnectionType type, POSPrinter printer, PrinterManager manager);

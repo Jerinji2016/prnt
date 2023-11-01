@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../helpers/globals.dart';
 
 class ThemeProvider extends ChangeNotifier {
+  static const String _prefKey = "current-theme";
+
   ThemeProvider() {
     int? themeIndex = sharedPreferences.getInt(_prefKey);
     if (themeIndex == null) {
@@ -15,8 +17,6 @@ class ThemeProvider extends ChangeNotifier {
   late ThemeMode _themeMode;
 
   ThemeMode get mode => _themeMode;
-
-  static const String _prefKey = "current-theme";
 
   void toggleTheme() {
     debugPrint("ThemeProvider.toggleTheme: ");

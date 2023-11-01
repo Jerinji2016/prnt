@@ -8,10 +8,13 @@ import '../connection_adapters/bluetooth_adapter.dart';
 import '../connection_adapters/impl.dart';
 import '../connection_adapters/network_adapter.dart';
 import '../connection_adapters/usb_adapter.dart';
-import '../providers/theme_provider.dart';
+import '../helpers/types.dart';
 import '../logger/logger.dart';
-import '../logger/screen.dart';
+import '../providers/data_provider.dart';
+import '../providers/theme_provider.dart';
 import 'login.dart';
+import 'message_log.dart';
+import 'pub_sub.dart';
 
 enum PrinterConnectionType {
   bluetooth(
@@ -41,6 +44,15 @@ class HomeScreen extends StatelessWidget {
 
   void _onSubscriptionTapped(BuildContext context) {
     debugPrint("Home._onSubscriptionTapped: ");
+    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
+    if (dataProvider.hasProfile) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const PubSubScreen()),
+      );
+      return;
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -66,13 +78,12 @@ class HomeScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            onPressed: () =>
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoggerScreen()),
-                ),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MessageLogScreen()),
+            ),
             icon: const Icon(Icons.description_outlined),
-            tooltip: "Debug Logs",
+            tooltip: "Message Logs",
           ),
           IconButton(
             onPressed: themeProvider.toggleTheme,
@@ -110,10 +121,12 @@ class HomeScreen extends StatelessWidget {
 
 class PrinterConnectionPanel extends StatefulWidget {
   final PrinterConnectionType type;
+  final OnPrinterSelected? onPrinterTapped;
 
   const PrinterConnectionPanel({
     Key? key,
     required this.type,
+    this.onPrinterTapped,
   }) : super(key: key);
 
   @override
@@ -130,7 +143,7 @@ class _PrinterConnectionPanelState extends State<PrinterConnectionPanel> with Pr
     registerAdapter(widget.type.adapter);
 
     SchedulerBinding.instance.addPostFrameCallback(
-          (timeStamp) => _scanForDevices(),
+      (timeStamp) => _scanForDevices(),
     );
   }
 
@@ -140,18 +153,6 @@ class _PrinterConnectionPanelState extends State<PrinterConnectionPanel> with Pr
     debugPrint("_PrinterConnectionPanelState._scanForDevices: ✅ Found ${printers.length} ${widget.type.title}");
     Logger.instance.debug("FOUND ${printers.length} ${widget.type.title}");
     setState(() => _isLoading = false);
-  }
-
-  void _onConnectTapped(POSPrinter printer) async {
-    try {
-      PrinterManager manager = await connect(printer);
-      debugPrint("_PrinterConnectionPanelState._onConnectTapped: ✅ CONNECTION STATUS: ${manager.isConnected}");
-      Logger.instance.debug("✅ CONNECTION STATUS: ${manager.isConnected}");
-      setState(() {});
-    } catch (e, st) {
-      debugPrint("_PrinterConnectionPanelState._onConnectTapped: ❌ERROR: FAILED TO CONNECT");
-      Logger.instance.error("❌ERROR: $e, $st");
-    }
   }
 
   void _onPrintTapped(POSPrinter printer) async {
@@ -171,15 +172,12 @@ class _PrinterConnectionPanelState extends State<PrinterConnectionPanel> with Pr
       debugPrint("_PrinterConnectionPanelState._onConnectTapped: ✅ CONNECTION STATUS: ${manager.isConnected}");
       Logger.instance.debug("✅ CONNECTION STATUS: ${manager.isConnected}");
       setState(() {});
+
+      widget.onPrinterTapped?.call(widget.type, printer, manager);
     } catch (e, st) {
       debugPrint("_PrinterConnectionPanelState._onConnectTapped: ❌ERROR: FAILED TO CONNECT");
       Logger.instance.error("❌ERROR: $e, $st");
     }
-
-    await dispatchPrint();
-    setState(() {});
-    debugPrint("_PrinterConnectionPanelState._onPrintTapped: ✅ PRINT DISPATCHED");
-    Logger.instance.debug("✅ PRINT DISPATCHED");
   }
 
   @override
@@ -201,9 +199,7 @@ class _PrinterConnectionPanelState extends State<PrinterConnectionPanel> with Pr
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
-                      color: Theme
-                          .of(context)
-                          .disabledColor,
+                      color: Theme.of(context).disabledColor,
                     ),
                   ),
                 ),
@@ -227,82 +223,82 @@ class _PrinterConnectionPanelState extends State<PrinterConnectionPanel> with Pr
               ),
               ChangeNotifierProvider(
                 create: (context) => viewModal,
-                builder: (context, index) =>
-                    Consumer<ConnectionViewModal>(
-                      builder: (context, viewModal, child) {
-                        if (_isLoading) {
-                          return const Center(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 16.0),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CircularProgressIndicator(),
-                                  SizedBox(height: 8.0),
-                                  Text('Loading Printers...'),
-                                ],
-                              ),
-                            ),
-                          );
-                        }
+                builder: (context, index) => Consumer<ConnectionViewModal>(
+                  builder: (context, viewModal, child) {
+                    if (_isLoading) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CircularProgressIndicator(),
+                              SizedBox(height: 8.0),
+                              Text('Loading Printers...'),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
 
-                        Iterable<POSPrinter> printers = viewModal.printers;
-                        if (printers.isEmpty) {
-                          return Center(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16.0),
-                              child: Text('No ${widget.type.title} found!'),
-                            ),
-                          );
-                        }
+                    Iterable<POSPrinter> printers = viewModal.printers;
+                    if (printers.isEmpty) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Text('No ${widget.type.title} found!'),
+                        ),
+                      );
+                    }
 
-                        return ListView.builder(
-                          itemCount: printers.length,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            final printer = printers.elementAt(index);
+                    return ListView.builder(
+                      itemCount: printers.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final printer = printers.elementAt(index);
 
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16.0),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
                                       children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              printer.name ?? "Unknown Printer",
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8.0),
-                                            Icon(
-                                              Icons.circle,
-                                              size: 18.0,
-                                              color: printer.connected ? Colors.green : Colors.red,
-                                            ),
-                                          ],
+                                        Text(
+                                          printer.name ?? "Unknown Printer",
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
-                                        Text('Address: ${printer.address}'),
+                                        const SizedBox(width: 8.0),
+                                        Icon(
+                                          Icons.circle,
+                                          size: 18.0,
+                                          color: printer.connected ? Colors.green : Colors.red,
+                                        ),
                                       ],
                                     ),
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () => _onPrintTapped(printer),
-                                    child: const Text('Print'),
-                                  ),
-                                ],
+                                    Text('Address: ${printer.address}'),
+                                  ],
+                                ),
                               ),
-                            );
-                          },
+                              if (widget.onPrinterTapped != null)
+                                ElevatedButton(
+                                  onPressed: () => _onPrintTapped(printer),
+                                  child: const Text('Select'),
+                                ),
+                            ],
+                          ),
                         );
                       },
-                    ),
+                    );
+                  },
+                ),
               ),
             ],
           ),

@@ -1,57 +1,65 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:prnt/modals/print_data.dart';
 import 'package:provider/provider.dart';
 import 'package:redis/redis.dart';
-import 'package:socket_io_client/socket_io_client.dart';
 
 import '../helpers/globals.dart';
+import '../modals/message_data.dart';
 import '../providers/data_provider.dart';
+import '../widgets.dart';
 
-class PubSubScreen extends StatelessWidget {
+class PubSubScreen extends StatefulWidget {
   const PubSubScreen({Key? key}) : super(key: key);
 
+  @override
+  State<PubSubScreen> createState() => _PubSubScreenState();
+}
+
+class _PubSubScreenState extends State<PubSubScreen> {
+  late bool _hasSubscribed = Provider.of<DataProvider>(context).hasSubscribed;
+
+  bool _isLoading = false;
+
   void _onSubscribeTapped(BuildContext context) async {
+    setState(() => _isLoading = true);
+
     DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
     String topic = "prod_dineazy_${dataProvider.profile.rvcId}";
 
-    _redisPackage(topic);
-    _socketPackage(topic);
-  }
-
-  void _socketPackage(String topic) async {
-    final socket = io(
-      'http://${RedisConfig.host}:${RedisConfig.port}',
-      <String, dynamic>{
-        'transports': ['websocket'],
-        'topic': [topic]
-      },
-    );
-
-    socket.on('new_message', (data) {
-      debugPrint("PubSubScreen._socketPackage: $data");
-    });
-
-    final conn = socket.connect();
-    debugPrint("PubSubScreen._socketPackage: connection status: ${conn.connected}");
-  }
-
-  void _redisPackage(String topic) async {
     final cmd = await RedisConnection().connect(
       RedisConfig.host,
       RedisConfig.port,
     );
+
+    final responseAuth = await cmd.send_object(['AUTH', RedisConfig.password]);
+    debugPrint("PubSubScreen._redisPackage: $responseAuth");
+
     final pubSub = PubSub(cmd);
 
-    pubSub.psubscribe([topic]);
-
     pubSub.subscribe([topic]);
-    debugPrint("PubSubScreen._redisPackage: subscribing to $topic...");
 
     final stream = pubSub.getStream();
-    // var streamWithoutErrors = stream.handleError(
-    //   (e, st) => debugPrint("PubSubScreen._onSubscribeTapped: ❌ERROR: $e, $st"),
-    // );
     await for (final msg in stream) {
-      debugPrint("PubSubScreen._redisPackage: message: $msg");
+      MessageData messageData = MessageData(msg);
+
+      if (messageData.type == "subscribe" && messageData.data == 1) {
+        debugPrint("_PubSubScreenState._onSubscribeTapped: ✅ Subscribed successfully");
+        dataProvider.hasSubscribed = true;
+        setState(() {
+          _isLoading = false;
+          _hasSubscribed = true;
+        });
+        continue;
+      }
+
+      if (messageData.type == "message") {
+        log(messageData.data);
+        PrintMessageData printMessageData = PrintMessageData(msg);
+        dataProvider.saveMessage(printMessageData);
+        continue;
+      }
     }
   }
 
@@ -60,27 +68,62 @@ class PubSubScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         elevation: 2.0,
-        title: const Text("Print Subscriptions"),
+        title: const Text("Print Subscription"),
       ),
       body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              "Subscribe to Print Notifications",
-              style: TextStyle(fontSize: 18.0),
-            ),
-            const SizedBox(height: 8.0),
-            MaterialButton(
-              onPressed: () => _onSubscribeTapped(context),
-              color: Theme.of(context).colorScheme.primaryContainer,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8.0)),
+        child: Builder(builder: (context) {
+          if (_isLoading) {
+            return const Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 12.0),
+                Text("Subscribing..."),
+              ],
+            );
+          }
+
+          if (_hasSubscribed) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.verified_outlined,
+                  color: Colors.green,
+                  size: 84,
+                ),
+                const SizedBox(height: 8.0),
+                const Text(
+                  "Subscribed successfully",
+                  style: TextStyle(
+                    fontSize: 22.0,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 18.0),
+                PrimaryButton(
+                  text: "Back to Home",
+                  onTap: () => Navigator.pop(context),
+                ),
+              ],
+            );
+          }
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Subscribe to Print Notifications",
+                style: TextStyle(fontSize: 18.0),
               ),
-              child: const Text("Subscribe"),
-            ),
-          ],
-        ),
+              const SizedBox(height: 8.0),
+              PrimaryButton(
+                onTap: () => _onSubscribeTapped(context),
+                text: "Subscribe",
+              ),
+            ],
+          );
+        }),
       ),
     );
   }

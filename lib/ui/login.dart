@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../helpers/api_manager.dart';
+import '../helpers/utils.dart';
 import '../modals/user_profile.dart';
 import '../providers/data_provider.dart';
+import '../widgets.dart';
 import 'pub_sub.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -62,24 +64,10 @@ class _LoginScreenState extends State<LoginScreen> {
           MaterialPageRoute(builder: (context) => const PubSubScreen()),
         );
       }
-    } catch (e, st) {
+    } catch (e) {
       debugPrint("_LoginState._onLoginTapped: ❌ERROR: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Center(
-              child: Text(
-                e.toString(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        showToast(context, e.toString());
       }
     }
 
@@ -171,32 +159,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 24.0),
-                        MaterialButton(
-                          onPressed: _onLoginTapped,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                          ),
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                          child: const Center(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 12.0),
-                              child: Text(
-                                "Login",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
+                        PrimaryButton(
+                          onTap: _onLoginTapped,
+                          text: "Login",
+                          padding: const EdgeInsets.symmetric(vertical: 12.0),
                         ),
                         const SizedBox(height: 4.0),
-                        MaterialButton(
-                          onPressed: () => Navigator.pop(context),
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 12.0),
-                            child: Text("Go Back"),
-                          ),
+                        PrimaryTextButton(
+                          text: "Go Back",
+                          onTap: () => Navigator.pop(context),
+                          padding: const EdgeInsets.symmetric(vertical: 12.0),
                         ),
                       ],
                     ),

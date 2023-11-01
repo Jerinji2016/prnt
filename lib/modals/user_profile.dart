@@ -1,11 +1,11 @@
 class UserProfile {
-  final Map<String, dynamic> _json;
+  final Map<String, dynamic> json;
 
-  UserProfile(this._json);
+  UserProfile(this.json);
 
-  List get _permissions => _json["permissions"];
+  List get _permissions => json["permissions"];
 
-  String get id => _json["_id"];
+  String get id => json["_id"];
 
   String get companyId => _permissions.first["company"]["_id"];
 
@@ -15,11 +15,11 @@ class UserProfile {
 
   String get fullName => "$firstName $lastName";
 
-  String get firstName => _json["firstName"];
+  String get firstName => json["firstName"];
 
-  String get lastName => _json["lastName"];
+  String get lastName => json["lastName"];
 
-  String get email => _json["email"];
+  String get email => json["email"];
 
-  String get phone => _json["phone"];
+  String get phone => json["phone"];
 }
