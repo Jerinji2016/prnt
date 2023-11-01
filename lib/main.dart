@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'helpers/globals.dart';
 import 'helpers/theme_provider.dart';
-import 'home.dart';
+import 'ui/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

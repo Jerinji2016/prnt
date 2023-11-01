@@ -4,13 +4,14 @@ import 'package:pos_printer_manager/models/pos_printer.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
 import 'package:provider/provider.dart';
 
-import 'connection_adapters/bluetooth_adapter.dart';
-import 'connection_adapters/impl.dart';
-import 'connection_adapters/network_adapter.dart';
-import 'connection_adapters/usb_adapter.dart';
-import 'helpers/theme_provider.dart';
-import 'logger/logger.dart';
-import 'logger/screen.dart';
+import '../connection_adapters/bluetooth_adapter.dart';
+import '../connection_adapters/impl.dart';
+import '../connection_adapters/network_adapter.dart';
+import '../connection_adapters/usb_adapter.dart';
+import '../helpers/theme_provider.dart';
+import '../logger/logger.dart';
+import '../logger/screen.dart';
+import 'login.dart';
 
 enum PrinterConnectionType {
   bluetooth(
@@ -38,6 +39,14 @@ enum PrinterConnectionType {
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
 
+  void _onSubscriptionTapped(BuildContext context) {
+    debugPrint("Home._onSubscriptionTapped: ");
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const Login()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
@@ -57,10 +66,11 @@ class Home extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const LoggerScreen()),
-            ),
+            onPressed: () =>
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoggerScreen()),
+                ),
             icon: const Icon(Icons.description_outlined),
             tooltip: "Debug Logs",
           ),
@@ -73,12 +83,11 @@ class Home extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const LoggerScreen()),
-        ),
-        tooltip: "Logs",
-        child: const Icon(Icons.description_outlined),
+        isExtended: true,
+        materialTapTargetSize: MaterialTapTargetSize.padded,
+        onPressed: () => _onSubscriptionTapped(context),
+        tooltip: "Subscribe to Print Notifications",
+        child: const Icon(Icons.subscriptions_outlined),
       ),
       body: const SingleChildScrollView(
         child: Column(
@@ -121,7 +130,7 @@ class _PrinterConnectionPanelState extends State<PrinterConnectionPanel> with Pr
     registerAdapter(widget.type.adapter);
 
     SchedulerBinding.instance.addPostFrameCallback(
-      (timeStamp) => _scanForDevices(),
+          (timeStamp) => _scanForDevices(),
     );
   }
 
@@ -192,7 +201,9 @@ class _PrinterConnectionPanelState extends State<PrinterConnectionPanel> with Pr
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
-                      color: Theme.of(context).disabledColor,
+                      color: Theme
+                          .of(context)
+                          .disabledColor,
                     ),
                   ),
                 ),
@@ -216,81 +227,82 @@ class _PrinterConnectionPanelState extends State<PrinterConnectionPanel> with Pr
               ),
               ChangeNotifierProvider(
                 create: (context) => viewModal,
-                builder: (context, index) => Consumer<ConnectionViewModal>(
-                  builder: (context, viewModal, child) {
-                    if (_isLoading) {
-                      return const Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 16.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              CircularProgressIndicator(),
-                              SizedBox(height: 8.0),
-                              Text('Loading Printers...'),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
+                builder: (context, index) =>
+                    Consumer<ConnectionViewModal>(
+                      builder: (context, viewModal, child) {
+                        if (_isLoading) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  CircularProgressIndicator(),
+                                  SizedBox(height: 8.0),
+                                  Text('Loading Printers...'),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
 
-                    Iterable<POSPrinter> printers = viewModal.printers;
-                    if (printers.isEmpty) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: Text('No ${widget.type.title} found!'),
-                        ),
-                      );
-                    }
+                        Iterable<POSPrinter> printers = viewModal.printers;
+                        if (printers.isEmpty) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16.0),
+                              child: Text('No ${widget.type.title} found!'),
+                            ),
+                          );
+                        }
 
-                    return ListView.builder(
-                      itemCount: printers.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        final printer = printers.elementAt(index);
+                        return ListView.builder(
+                          itemCount: printers.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            final printer = printers.elementAt(index);
 
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          printer.name ?? "Unknown Printer",
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              printer.name ?? "Unknown Printer",
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8.0),
+                                            Icon(
+                                              Icons.circle,
+                                              size: 18.0,
+                                              color: printer.connected ? Colors.green : Colors.red,
+                                            ),
+                                          ],
                                         ),
-                                        const SizedBox(width: 8.0),
-                                        Icon(
-                                          Icons.circle,
-                                          size: 18.0,
-                                          color: printer.connected ? Colors.green : Colors.red,
-                                        ),
+                                        Text('Address: ${printer.address}'),
                                       ],
                                     ),
-                                    Text('Address: ${printer.address}'),
-                                  ],
-                                ),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () => _onPrintTapped(printer),
+                                    child: const Text('Print'),
+                                  ),
+                                ],
                               ),
-                              ElevatedButton(
-                                onPressed: () => _onPrintTapped(printer),
-                                child: const Text('Print'),
-                              ),
-                            ],
-                          ),
+                            );
+                          },
                         );
                       },
-                    );
-                  },
-                ),
+                    ),
               ),
             ],
           ),
