@@ -56,13 +56,20 @@ class Home extends StatelessWidget {
           ),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: IconButton(
-              onPressed: themeProvider.toggleTheme,
-              icon: Icon(themeProvider.icon),
+          IconButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const LoggerScreen()),
             ),
-          )
+            icon: const Icon(Icons.description_outlined),
+            tooltip: "Debug Logs",
+          ),
+          IconButton(
+            onPressed: themeProvider.toggleTheme,
+            icon: Icon(themeProvider.icon),
+            tooltip: "Change Theme",
+          ),
+          const SizedBox(width: 16.0),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -183,10 +190,12 @@ class _PrinterConnectionPanelState extends State<PrinterConnectionPanel> with Pr
             children: [
               Container(
                 decoration: BoxDecoration(
-                    border: Border(
-                        bottom: BorderSide(
-                  color: Theme.of(context).disabledColor,
-                ))),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Theme.of(context).disabledColor,
+                    ),
+                  ),
+                ),
                 child: Row(
                   children: [
                     Expanded(
@@ -209,8 +218,6 @@ class _PrinterConnectionPanelState extends State<PrinterConnectionPanel> with Pr
                 create: (context) => viewModal,
                 builder: (context, index) => Consumer<ConnectionViewModal>(
                   builder: (context, viewModal, child) {
-                    debugPrint("_PrinterConnectionPanelState.build: ");
-
                     if (_isLoading) {
                       return const Center(
                         child: Padding(

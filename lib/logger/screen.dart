@@ -12,6 +12,7 @@ class LoggerScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Logger"),
+        elevation: 2.0,
       ),
       body: ListView.builder(
         itemBuilder: (context, index) {
