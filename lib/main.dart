@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:prnt/providers/data_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'helpers/globals.dart';
-import 'helpers/theme_provider.dart';
+import 'providers/theme_provider.dart';
 import 'ui/home.dart';
 
 void main() async {
@@ -21,8 +22,15 @@ class PrntApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ThemeProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => ThemeProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => DataProvider(),
+        ),
+      ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return MaterialApp(

@@ -8,7 +8,7 @@ import '../connection_adapters/bluetooth_adapter.dart';
 import '../connection_adapters/impl.dart';
 import '../connection_adapters/network_adapter.dart';
 import '../connection_adapters/usb_adapter.dart';
-import '../helpers/theme_provider.dart';
+import '../providers/theme_provider.dart';
 import '../logger/logger.dart';
 import '../logger/screen.dart';
 import 'login.dart';

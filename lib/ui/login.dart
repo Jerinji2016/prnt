@@ -86,6 +86,17 @@ class _LoginState extends State<Login> {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 4.0),
+                      MaterialButton(
+                        onPressed: () => Navigator.pop(context),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12.0),
+                          child: Text("Go Back"),
+                        ),
+                      ),
                     ],
                   ),
                 ),

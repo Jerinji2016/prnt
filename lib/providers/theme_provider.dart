@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'globals.dart';
+import '../helpers/globals.dart';
 
 class ThemeProvider extends ChangeNotifier {
   ThemeProvider() {
