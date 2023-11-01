@@ -44,6 +44,7 @@ class ApiManager {
       throw "Failed to fetch token";
     }
 
+    debugPrint("ApiManager.login: ✅ Login Successful");
     return token;
   }
 
@@ -56,6 +57,7 @@ class ApiManager {
     if (json["code"] != 200) {
       throw "Failed to fetch Profile";
     }
+    debugPrint("ApiManager.getProfile: ✅ Profile fetched successfully");
     return UserProfile(json["data"]);
   }
 }
