@@ -36,14 +36,14 @@ enum PrinterConnectionType {
   });
 }
 
-class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
   void _onSubscriptionTapped(BuildContext context) {
     debugPrint("Home._onSubscriptionTapped: ");
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const Login()),
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
     );
   }
 

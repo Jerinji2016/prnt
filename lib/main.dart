@@ -45,7 +45,7 @@ class PrntApp extends StatelessWidget {
             darkTheme: ThemeData.dark(
               useMaterial3: true,
             ),
-            home: const Home(),
+            home: const HomeScreen(),
           );
         },
       ),
