@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:pos_printer_manager/models/pos_printer.dart';
@@ -11,7 +9,6 @@ import 'connection_adapters/bluetooth_adapter.dart';
 import 'connection_adapters/impl.dart';
 import 'connection_adapters/network_adapter.dart';
 import 'connection_adapters/usb_adapter.dart';
-import 'helpers/demo.dart';
 import 'logger/screen.dart';
 
 enum PrinterConnectionType {
