@@ -6,7 +6,8 @@ import '../helpers/api_manager.dart';
 import '../helpers/utils.dart';
 import '../modals/user_profile.dart';
 import '../providers/data_provider.dart';
-import '../widgets.dart';
+import '../widgets/primary_button.dart';
+import '../widgets/primary_text_button.dart';
 import 'pub_sub.dart';
 
 class LoginScreen extends StatefulWidget {

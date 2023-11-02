@@ -8,7 +8,7 @@ import '../helpers/globals.dart';
 import '../modals/message_data.dart';
 import '../modals/print_data.dart';
 import '../providers/data_provider.dart';
-import '../widgets.dart';
+import '../widgets/primary_button.dart';
 
 class PubSubScreen extends StatefulWidget {
   const PubSubScreen({Key? key}) : super(key: key);

@@ -11,8 +11,8 @@ import 'package:provider/provider.dart';
 import '../helpers/utils.dart';
 import '../modals/print_data.dart';
 import '../providers/data_provider.dart';
-import '../widgets.dart';
-import 'home.dart';
+import '../widgets/primary_button.dart';
+import '../widgets/printer_connection_panel.dart';
 
 class MessageLogScreen extends StatelessWidget {
   const MessageLogScreen({Key? key}) : super(key: key);
