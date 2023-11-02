@@ -1,12 +1,12 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:prnt/modals/print_data.dart';
 import 'package:provider/provider.dart';
 import 'package:redis/redis.dart';
 
 import '../helpers/globals.dart';
 import '../modals/message_data.dart';
+import '../modals/print_data.dart';
 import '../providers/data_provider.dart';
 import '../widgets.dart';
 

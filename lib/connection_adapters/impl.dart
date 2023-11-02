@@ -2,9 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:pos_printer_manager/models/pos_printer.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
 
-import '../helpers/demo.dart';
 import '../helpers/types.dart';
-import '../logger/logger.dart';
 
 abstract class IPrinterConnectionAdapters<T extends POSPrinter, X extends PrinterManager> {
   const IPrinterConnectionAdapters();
@@ -14,14 +12,9 @@ abstract class IPrinterConnectionAdapters<T extends POSPrinter, X extends Printe
   Future<PrinterManager> connect(T printer);
 
   Future<void> dispatchPrint(X printerManager, List<int> data) async {
-    debugPrint("IPrinterConnectionAdapters.dispatchPrint: IS CONNECTED: ${printerManager.isConnected}");
-    Logger.instance.debug("IS CONNECTED: ${printerManager.isConnected}");
-
     final conn = await printerManager.writeBytes(data, isDisconnect: false);
     debugPrint("IPrinterConnectionAdapters.dispatchPrint: conn value: ${conn.value}");
     debugPrint("IPrinterConnectionAdapters.dispatchPrint: conn msg: ${conn.msg}");
-
-    Logger.instance.debug("Dispatch Response: value: ${conn.value}, msg: ${conn.msg}");
   }
 }
 
@@ -70,11 +63,11 @@ mixin class PrinterConnectionMixin<X extends PrinterManager> implements IPrinter
 
   @override
   Future<void> dispatchPrint([PrinterManager? printerManager, List<int>? data]) async {
-    final data = await testTicket();
-    if ((viewModal.printerManager ?? printerManager) == null) {
-      Logger.instance.error("Not connected to printer");
-      throw "Not connected to printer";
-    }
-    return _adapter.dispatchPrint(viewModal.printerManager!, data);
+    // final data = await testTicket();
+    // if ((viewModal.printerManager ?? printerManager) == null) {
+    //   Logger.instance.error("Not connected to printer");
+    //   throw "Not connected to printer";
+    // }
+    // return _adapter.dispatchPrint(viewModal.printerManager!, data);
   }
 }

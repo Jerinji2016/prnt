@@ -3,7 +3,6 @@ import 'package:pos_printer_manager/pos_printer_manager.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
 
 import '../helpers/types.dart';
-import '../logger/logger.dart';
 import 'impl.dart';
 
 class BluetoothAdapter extends IPrinterConnectionAdapters<BluetoothPrinter, BluetoothPrinterManager> {
@@ -19,9 +18,6 @@ class BluetoothAdapter extends IPrinterConnectionAdapters<BluetoothPrinter, Blue
     debugPrint("BluetoothAdapter.connect: ${conn.msg}");
     debugPrint("BluetoothAdapter.connect: ${conn.value}");
 
-    Logger.instance.debug(conn.msg);
-    Logger.instance.debug(conn.value);
-
     return manager;
   }
 
@@ -31,7 +27,6 @@ class BluetoothAdapter extends IPrinterConnectionAdapters<BluetoothPrinter, Blue
       return BluetoothPrinterManager.discover();
     } catch (e, st) {
       debugPrint("BluetoothAdapter.connect: ❌ERROR: $e, $st");
-      Logger.instance.error(e);
       rethrow;
     }
   }

@@ -9,7 +9,6 @@ import '../connection_adapters/impl.dart';
 import '../connection_adapters/network_adapter.dart';
 import '../connection_adapters/usb_adapter.dart';
 import '../helpers/types.dart';
-import '../logger/logger.dart';
 import '../providers/data_provider.dart';
 import '../providers/theme_provider.dart';
 import 'login.dart';
@@ -151,12 +150,11 @@ class _PrinterConnectionPanelState extends State<PrinterConnectionPanel> with Pr
     setState(() => _isLoading = true);
     final printers = await scan();
     debugPrint("_PrinterConnectionPanelState._scanForDevices: ✅ Found ${printers.length} ${widget.type.title}");
-    Logger.instance.debug("FOUND ${printers.length} ${widget.type.title}");
     setState(() => _isLoading = false);
   }
 
   void _onPrintTapped(POSPrinter printer) async {
-    Logger.instance.debug("CONNECTING TO: Printer[${printer.id}]"
+    debugPrint("CONNECTING TO: Printer[${printer.id}]"
         "\nname: ${printer.name}"
         "\ntype: ${printer.type}"
         "\naddress: ${printer.address}"
@@ -170,13 +168,11 @@ class _PrinterConnectionPanelState extends State<PrinterConnectionPanel> with Pr
     try {
       PrinterManager manager = await connect(printer);
       debugPrint("_PrinterConnectionPanelState._onConnectTapped: ✅ CONNECTION STATUS: ${manager.isConnected}");
-      Logger.instance.debug("✅ CONNECTION STATUS: ${manager.isConnected}");
       setState(() {});
 
       widget.onPrinterTapped?.call(widget.type, printer, manager);
-    } catch (e, st) {
+    } catch (e) {
       debugPrint("_PrinterConnectionPanelState._onConnectTapped: ❌ERROR: FAILED TO CONNECT");
-      Logger.instance.error("❌ERROR: $e, $st");
     }
   }
 
