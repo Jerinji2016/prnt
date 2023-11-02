@@ -26,7 +26,7 @@ class _PubSubScreenState extends State<PubSubScreen> {
     setState(() => _isLoading = true);
 
     DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
-    String topic = "prod_dineazy_${dataProvider.profile.rvcId}";
+    String topic = "prod_dineazy_${dataProvider.profile.revenueCenterId}";
 
     final cmd = await RedisConnection().connect(
       RedisConfig.host,

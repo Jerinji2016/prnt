@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prnt/ui/login.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,6 +34,9 @@ class PrntApp extends StatelessWidget {
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
+          DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
+          Widget home = dataProvider.hasProfile ? const HomeScreen() : const LoginScreen();
+
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             themeMode: themeProvider.mode,
@@ -43,7 +47,7 @@ class PrntApp extends StatelessWidget {
               ),
             ),
             darkTheme: ThemeData.dark(useMaterial3: true),
-            home: const HomeScreen(),
+            home: home,
           );
         },
       ),

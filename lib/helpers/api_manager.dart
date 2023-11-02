@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 
+import '../modals/restaurant.dart';
 import '../modals/user_profile.dart';
 
 const String _prodBaseUrl = "https://dineazy-api.elaachi.com/api/v2";
@@ -59,5 +60,25 @@ class ApiManager {
     }
     debugPrint("ApiManager.getProfile: ✅ Profile fetched successfully");
     return UserProfile(json["data"]);
+  }
+
+  Future<Restaurant> getRestaurant(String token, String companyId, String revenueCenterId) async {
+    Uri uri = Uri.parse("$_baseUrl/companies/$companyId");
+    Response response = await _client.get(uri);
+
+    Map<String, dynamic> json = jsonDecode(response.body);
+
+    if (json["code"] != 200) {
+      throw "Failed to fetch Restaurant details";
+    }
+
+    Map<String, dynamic> restaurantJson = (json["data"] as Map<String, dynamic>)
+      ..addAll({
+        "revenueCenterId": revenueCenterId,
+      });
+
+    Restaurant restaurant = Restaurant(restaurantJson);
+    debugPrint("ApiManager.getRestaurantDetails: ✅ Fetched Restaurant Details: $restaurant");
+    return restaurant;
   }
 }

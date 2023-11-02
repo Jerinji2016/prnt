@@ -1,9 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:prnt/ui/home.dart';
 import 'package:provider/provider.dart';
 
 import '../helpers/api_manager.dart';
 import '../helpers/utils.dart';
+import '../modals/restaurant.dart';
 import '../modals/user_profile.dart';
 import '../providers/data_provider.dart';
 import '../widgets/primary_button.dart';
@@ -54,15 +57,18 @@ class _LoginScreenState extends State<LoginScreen> {
       String token = await apiManager.login(username, password);
 
       setState(() => _loadingMessage = "Fetching Profile...");
-
       UserProfile profile = await apiManager.getProfile(token);
+      setState(() => _loadingMessage = "Fetching Restaurant...");
+      Restaurant restaurant = await apiManager.getRestaurant(
+        token,
+        profile.companyId,
+        profile.revenueCenterId,
+      );
       if (mounted) {
-        DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
-        dataProvider.setProfile(profile);
-
+        Provider.of<DataProvider>(context, listen: false).save(profile, restaurant);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const PubSubScreen()),
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       }
     } catch (e) {
@@ -167,8 +173,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 4.0),
                         PrimaryTextButton(
-                          text: "Go Back",
-                          onTap: () => Navigator.pop(context),
+                          text: "Exit",
+                          onTap: () => SystemNavigator.pop(animated: true),
                           padding: const EdgeInsets.symmetric(vertical: 12.0),
                         ),
                       ],

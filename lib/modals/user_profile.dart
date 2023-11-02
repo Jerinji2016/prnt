@@ -9,7 +9,7 @@ class UserProfile {
 
   String get companyId => _permissions.first["company"]["_id"];
 
-  String get rvcId => (_permissions.first["revenueCenters"] as List).firstWhere(
+  String get revenueCenterId => (_permissions.first["revenueCenters"] as List).firstWhere(
         (element) => element["active"],
       )["_id"];
 
