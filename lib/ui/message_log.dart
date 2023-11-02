@@ -84,7 +84,8 @@ class _MessageTileState extends State<MessageTile> {
     final profile = await CapabilityProfile.load();
     final generator = Generator(PaperSize.mm80, profile);
     List<int> printBytes = generator.imageRaster(image);
-    printBytes += generator.cut(mode: PosCutMode.partial);
+    printBytes += generator.feed(2);
+    printBytes += generator.cut();
 
     if (mounted) {
       await showModalBottomSheet(

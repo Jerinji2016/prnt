@@ -71,59 +71,64 @@ class _PubSubScreenState extends State<PubSubScreen> {
         title: const Text("Print Subscription"),
       ),
       body: Center(
-        child: Builder(builder: (context) {
-          if (_isLoading) {
-            return const Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 12.0),
-                Text("Subscribing..."),
-              ],
-            );
-          }
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.shortestSide * 0.7,
+          ),
+          child: Builder(builder: (context) {
+            if (_isLoading) {
+              return const Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 12.0),
+                  Text("Subscribing..."),
+                ],
+              );
+            }
 
-          if (_hasSubscribed) {
+            if (_hasSubscribed) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.verified_outlined,
+                    color: Colors.green,
+                    size: 84,
+                  ),
+                  const SizedBox(height: 8.0),
+                  const Text(
+                    "Subscribed successfully",
+                    style: TextStyle(
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 18.0),
+                  PrimaryButton(
+                    text: "Back to Home",
+                    onTap: () => Navigator.pop(context),
+                  ),
+                ],
+              );
+            }
+
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
-                  Icons.verified_outlined,
-                  color: Colors.green,
-                  size: 84,
+                const Text(
+                  "Subscribe to Print Notifications",
+                  style: TextStyle(fontSize: 18.0),
                 ),
                 const SizedBox(height: 8.0),
-                const Text(
-                  "Subscribed successfully",
-                  style: TextStyle(
-                    fontSize: 22.0,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 18.0),
                 PrimaryButton(
-                  text: "Back to Home",
-                  onTap: () => Navigator.pop(context),
+                  onTap: () => _onSubscribeTapped(context),
+                  text: "Subscribe",
                 ),
               ],
             );
-          }
-
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "Subscribe to Print Notifications",
-                style: TextStyle(fontSize: 18.0),
-              ),
-              const SizedBox(height: 8.0),
-              PrimaryButton(
-                onTap: () => _onSubscribeTapped(context),
-                text: "Subscribe",
-              ),
-            ],
-          );
-        }),
+          }),
+        ),
       ),
     );
   }
