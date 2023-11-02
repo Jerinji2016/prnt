@@ -20,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  bool _hidePassword = false;
+  bool _hidePassword = true;
 
   String? _loadingMessage;
 

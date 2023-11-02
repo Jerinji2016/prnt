@@ -20,8 +20,9 @@ class PrimaryButton extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(8.0)),
       ),
-      child: Padding(
+      child: Container(
         padding: padding,
+        alignment: Alignment.center,
         child: Text(text),
       ),
     );
@@ -47,8 +48,9 @@ class PrimaryTextButton extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(8.0)),
       ),
-      child: Padding(
+      child: Container(
         padding: padding,
+        alignment: Alignment.center,
         child: Text(text),
       ),
     );
