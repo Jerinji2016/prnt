@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:prnt/ui/login.dart';
+import 'package:prnt/helpers/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'helpers/globals.dart';
 import 'providers/data_provider.dart';
 import 'providers/theme_provider.dart';
+import 'service/foreground_service.dart';
 import 'ui/home.dart';
+import 'ui/login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await ForegroundService.registerHeadlessEntry();
   sharedPreferences = await SharedPreferences.getInstance();
+  getPrinters();
 
   runApp(
     const PrntApp(),

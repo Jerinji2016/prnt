@@ -1,33 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:prnt/modals/restaurant.dart';
 import 'package:provider/provider.dart';
 
+import '../helpers/utils.dart';
+import '../modals/restaurant.dart';
 import '../providers/data_provider.dart';
 import '../providers/theme_provider.dart';
+import '../service/foreground_service.dart';
 import '../widgets/primary_button.dart';
-import 'login.dart';
 import 'message_log.dart';
-import 'pub_sub.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
-
-  void _onSubscriptionTapped(BuildContext context) {
-    debugPrint("Home._onSubscriptionTapped: ");
-    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
-    if (dataProvider.hasProfile) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const PubSubScreen()),
-      );
-      return;
-    }
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,13 +46,6 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(width: 16.0),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        isExtended: true,
-        materialTapTargetSize: MaterialTapTargetSize.padded,
-        onPressed: () => _onSubscriptionTapped(context),
-        tooltip: "Subscribe to Print Notifications",
-        child: const Icon(Icons.subscriptions_outlined),
-      ),
       body: const Padding(
         padding: EdgeInsets.all(24.0),
         child: Column(
@@ -86,8 +62,54 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class PrinterServiceStatusPanel extends StatelessWidget {
+class PrinterServiceStatusPanel extends StatefulWidget {
   const PrinterServiceStatusPanel({Key? key}) : super(key: key);
+
+  @override
+  State<PrinterServiceStatusPanel> createState() => _PrinterServiceStatusPanelState();
+}
+
+class _PrinterServiceStatusPanelState extends State<PrinterServiceStatusPanel> {
+  ForegroundServiceStatus status = ForegroundServiceStatus.stopped;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadServiceStatus();
+  }
+
+  void _loadServiceStatus() async {
+    bool isServiceRunning = await isForegroundServiceRunning();
+    setState(() {
+      status = isServiceRunning ? ForegroundServiceStatus.running : ForegroundServiceStatus.stopped;
+    });
+  }
+
+  void _onTap() async {
+    setState(() => status = ForegroundServiceStatus.loading);
+    runServerOnMainIsolate();
+    await Future.delayed(const Duration(seconds: 3));
+    if (mounted) {
+      showToast(context, "Subscribed successfully", color: Colors.green);
+    }
+    setState(() => status = ForegroundServiceStatus.running);
+    return;
+
+    bool isServiceRunning = status == ForegroundServiceStatus.running;
+    setState(() => status = ForegroundServiceStatus.loading);
+
+    if (isServiceRunning) {
+      bool response = await stopForegroundService();
+      await Future.delayed(const Duration(seconds: 2));
+      debugPrint("_PrinterServiceStatusPanelState._onTap: Stop Foreground Service status: ${response ? "✅" : "❌"}");
+    } else {
+      bool response = await startForegroundService();
+      await Future.delayed(const Duration(seconds: 5));
+      debugPrint("_PrinterServiceStatusPanelState._onTap: Start Foreground Service status: ${response ? "✅" : "❌"}");
+    }
+
+    _loadServiceStatus();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,28 +127,37 @@ class PrinterServiceStatusPanel extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Row(
+            Row(
               children: [
-                Text(
+                const Text(
                   "Printer Service",
                   style: TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(width: 8.0),
+                const SizedBox(width: 8.0),
                 Icon(
-                  Icons.check_circle,
-                  color: Colors.green,
+                  status.icon,
+                  color: status.iconColor,
                   size: 20.0,
                 )
               ],
             ),
-            const Text("Status: Running"),
+            Text("Status: ${status.name}"),
             const SizedBox(height: 10.0),
-            PrimaryButton(
-              onTap: () {},
-              text: "Stop",
+            AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              child: status == ForegroundServiceStatus.loading
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : status == ForegroundServiceStatus.running
+                      ? const SizedBox.shrink()
+                      : PrimaryButton(
+                          onTap: _onTap,
+                          text: status == ForegroundServiceStatus.stopped ? "Start" : "Stop",
+                        ),
             ),
           ],
         ),
@@ -163,7 +194,7 @@ class LoginDetails extends StatelessWidget {
           width: MediaQuery.of(context).size.shortestSide * 0.5,
           child: PrimaryButton(
             text: "Logout",
-            onTap: () {},
+            onTap: dataProvider.logout,
           ),
         ),
       ],

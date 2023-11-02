@@ -23,6 +23,7 @@ dependencies:
   redis: ^4.0.0
   shared_preferences: ^2.2.2
   http: ^0.13.6
+  sqflite: ^2.3.0
 
 dev_dependencies:
   flutter_test:

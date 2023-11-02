@@ -57,4 +57,8 @@ class DataProvider extends ChangeNotifier {
     _messages.add(data);
     notifyListeners();
   }
+
+  void logout() {
+    debugPrint("DataProvider.logout: ");
+  }
 }

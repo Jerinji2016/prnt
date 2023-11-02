@@ -21,3 +21,5 @@ typedef OnPrinterSelected = void Function(
   POSPrinter printer,
   PrinterManager manager,
 );
+
+typedef POSPrinterEntry = MapEntry<PrinterConnectionType, POSPrinterIterable>;
