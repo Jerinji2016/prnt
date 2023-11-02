@@ -44,7 +44,6 @@ class PrimaryTextButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialButton(
       onPressed: onTap,
-      color: Theme.of(context).colorScheme.primaryContainer,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(8.0)),
       ),
