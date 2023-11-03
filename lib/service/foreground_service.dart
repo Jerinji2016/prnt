@@ -119,7 +119,7 @@ Future<void> _registerWithRedisServer() async {
 }
 
 void _dispatchPrint(PrintMessageData printMessageData) async {
-  Map<PrinterConnectionType, POSPrinterIterable> printerMap = await getPrinters();
+  POSPrintersMap printerMap = await getPrinters();
 
   POSPrinter? printer;
   PrinterConnectionType? type;

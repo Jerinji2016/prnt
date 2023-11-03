@@ -12,15 +12,15 @@ import '../helpers/types.dart';
 
 enum PrinterConnectionType {
   bluetooth(
-    title: "Bluetooth Printers",
+    title: "Bluetooth",
     adapter: BluetoothAdapter(),
   ),
   network(
-    title: "Network Printers",
+    title: "Network",
     adapter: NetworkAdapter(),
   ),
   usb(
-    title: "USB Printers",
+    title: "USB",
     adapter: USBAdapter(),
   );
 

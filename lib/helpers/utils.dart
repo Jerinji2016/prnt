@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:prnt/helpers/types.dart';
 import 'package:webcontent_converter/webcontent_converter.dart';
 
 import '../widgets/printer_connection_panel.dart';
+import 'types.dart';
 
 const MethodChannel _channel = MethodChannel("com.jerin.prnt/main");
 
@@ -44,11 +44,10 @@ void showToast(BuildContext context, String message, {Color? color}) => Scaffold
       ),
     );
 
-
-Future<Map<PrinterConnectionType, POSPrinterIterable>> getPrinters() async {
+Future<POSPrintersMap> getPrinters() async {
   Map<PrinterConnectionType, POSPrinterIterable> printerMap = {};
 
-  List<POSPrinterEntry> responses = await Future.wait(
+  List<MapEntry<PrinterConnectionType, POSPrinterIterable>> responses = await Future.wait(
     [
       PrinterConnectionType.network,
       PrinterConnectionType.bluetooth,
