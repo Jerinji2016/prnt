@@ -138,12 +138,16 @@ void _dispatchPrint(PrintMessageData printMessageData) async {
     break;
   }
 
+  debugPrint("_dispatchPrint: name: ${printMessageData.data.printer.name}");
+  debugPrint("_dispatchPrint: value: ${printMessageData.data.printer.value}");
+
   if(printer == null || type == null) {
     debugPrint("_dispatchPrint: ❌ERROR: Expected Printer(${printMessageData.data.printer.name}) was not found");
     return;
   }
 
   PrinterManager manager = await type.adapter.connect(printer);
+  debugPrint("_dispatchPrint: ✅ Connected to ${printer.name} | ${printer.address}");
 
   final bytes = await generateImageBytesFromHtml(printMessageData.data.template);
   img.Image? image = img.decodeImage(Uint8List.fromList(bytes));

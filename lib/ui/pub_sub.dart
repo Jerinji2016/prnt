@@ -37,7 +37,6 @@ class _PubSubScreenState extends State<PubSubScreen> {
     debugPrint("PubSubScreen._redisPackage: $responseAuth");
 
     final pubSub = PubSub(cmd);
-
     pubSub.subscribe([topic]);
 
     final stream = pubSub.getStream();
