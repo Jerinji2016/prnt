@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:prnt/ui/login.dart';
 import 'package:provider/provider.dart';
 
 import '../helpers/types.dart';
@@ -179,6 +180,15 @@ class _PrinterServiceStatusPanelState extends State<PrinterServiceStatusPanel> {
 class LoginDetails extends StatelessWidget {
   const LoginDetails({Key? key}) : super(key: key);
 
+  void _onLogoutTapped(BuildContext context) async {
+    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
+    dataProvider.logout();
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     DataProvider dataProvider = Provider.of<DataProvider>(context);
@@ -204,7 +214,7 @@ class LoginDetails extends StatelessWidget {
           width: MediaQuery.of(context).size.shortestSide * 0.5,
           child: PrimaryButton(
             text: "Logout",
-            onTap: dataProvider.logout,
+            onTap: () => _onLogoutTapped(context),
           ),
         ),
       ],

@@ -60,5 +60,7 @@ class DataProvider extends ChangeNotifier {
 
   void logout() {
     debugPrint("DataProvider.logout: ");
+    sharedPreferences.remove(_profileKey);
+    sharedPreferences.remove(_restaurantKey);
   }
 }
