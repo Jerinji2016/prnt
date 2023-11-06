@@ -22,7 +22,7 @@ class PrimaryButton extends StatelessWidget {
       ),
       child: Container(
         padding: padding,
-        alignment: Alignment.center,
+        // alignment: Alignment.center,
         child: Text(text),
       ),
     );

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pos_printer_manager/pos_printer_manager.dart';
-import 'package:prnt/helpers/extensions.dart';
 import 'package:webcontent_converter/webcontent_converter.dart';
 
-import '../widgets/printer_connection_panel.dart';
+import 'extensions.dart';
 import 'types.dart';
 
 const MethodChannel _channel = MethodChannel("com.jerin.prnt/main");
@@ -46,22 +45,23 @@ void showToast(BuildContext context, String message, {Color? color}) => Scaffold
       ),
     );
 
-Future<POSPrintersMap> getPrinters() async {
-  Map<ConnectionType, POSPrinterIterable> printerMap = {};
+Future<POSPrinterIterable> getPrinters() async {
+  POSPrinterList allPrinters = [];
 
-  List<MapEntry<ConnectionType, POSPrinterIterable>> responses = await Future.wait(
-    [
-      ConnectionType.network,
-      ConnectionType.bluetooth,
-    ].map((e) async {
+  List<POSPrinterIterable> responses = await Future.wait(
+    ConnectionType.values.map((e) async {
       POSPrinterIterable printers = await e.getAdapter().scan();
-      return MapEntry(e, printers);
+      return printers;
     }),
   );
 
-  responses.removeWhere((element) => element.value.isEmpty);
-  printerMap.addEntries(responses);
-  return printerMap;
+  for(POSPrinterIterable printers in responses) {
+    if(printers.isNotEmpty) {
+      allPrinters.addAll(printers);
+    }
+  }
+  debugPrint("getPrinters: ${allPrinters.length}");
+  return allPrinters;
 }
 
 Future<List<int>> testTicket() async {

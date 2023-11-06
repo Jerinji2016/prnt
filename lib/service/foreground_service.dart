@@ -8,18 +8,17 @@ import 'package:image/image.dart' as img;
 import 'package:pos_printer_manager/models/pos_printer.dart';
 import 'package:pos_printer_manager/pos_printer_manager.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
-import 'package:prnt/helpers/extensions.dart';
 import 'package:redis/redis.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_android/shared_preferences_android.dart';
 
+import '../helpers/extensions.dart';
 import '../helpers/globals.dart';
 import '../helpers/types.dart';
 import '../helpers/utils.dart';
 import '../modals/message_data.dart';
 import '../modals/print_data.dart';
 import '../providers/data_provider.dart';
-import '../widgets/printer_connection_panel.dart';
 
 enum ForegroundServiceStatus {
   stopped(
@@ -120,34 +119,28 @@ Future<void> _registerWithRedisServer() async {
 }
 
 void _dispatchPrint(PrintMessageData printMessageData) async {
-  POSPrintersMap printerMap = await getPrinters();
+  POSPrinterIterable printers = await getPrinters();
 
-  POSPrinter? printer;
-  ConnectionType? type;
 
-  for (ConnectionType connectionType in printerMap.keys) {
-    POSPrinterIterable? printers = printerMap[connectionType];
-    if (printers == null) continue;
+  int index = printers.toList().indexWhere(
+        (element) => element.name == printMessageData.data.printer.value,
+      );
+  if (index == -1) {
+    debugPrint("_dispatchPrint: ❌ERROR: Expected Printer(${printMessageData.data.printer.name}) was not found");
+    return;
+  }
 
-    int index = printers.toList().indexWhere(
-          (element) => element.name == printMessageData.data.printer.value,
-        );
-    if (index == -1) continue;
-
-    printer = printers.elementAt(index);
-    type = connectionType;
-    break;
+  POSPrinter printer = printers.elementAt(index);
+  ConnectionType? connectionType = printer.connectionType;
+  if (connectionType == null) {
+    debugPrint("_dispatchPrint: ❌ERROR: Unknown Printer connection type");
+    return;
   }
 
   debugPrint("_dispatchPrint: name: ${printMessageData.data.printer.name}");
   debugPrint("_dispatchPrint: value: ${printMessageData.data.printer.value}");
 
-  if(printer == null || type == null) {
-    debugPrint("_dispatchPrint: ❌ERROR: Expected Printer(${printMessageData.data.printer.name}) was not found");
-    return;
-  }
-
-  PrinterManager manager = await type.getAdapter().connect(printer);
+  PrinterManager manager = await connectionType.getAdapter().connect(printer);
   debugPrint("_dispatchPrint: ✅ Connected to ${printer.name} | ${printer.address}");
 
   final bytes = await generateImageBytesFromHtml(printMessageData.data.template);
@@ -164,6 +157,6 @@ void _dispatchPrint(PrintMessageData printMessageData) async {
   printBytes += generator.feed(2);
   printBytes += generator.cut();
 
-  await type.getAdapter().dispatchPrint(manager, printBytes);
+  await connectionType.getAdapter().dispatchPrint(manager, printBytes);
   debugPrint("dispatchPrint: ✅ Print Dispatched successfully");
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:prnt/ui/setup_printer.dart';
 import 'package:provider/provider.dart';
 
 import '../helpers/utils.dart';
@@ -10,6 +9,7 @@ import '../service/foreground_service.dart';
 import '../widgets/primary_button.dart';
 import 'login.dart';
 import 'messages.dart';
+import 'setup_printers/setup_printers.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -55,7 +55,11 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const PrinterServiceStatusPanel(),
-              const SizedBox(height: 20.0),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 20.0),
+                height: 2.0,
+                color: Theme.of(context).highlightColor,
+              ),
               _SettingsOptions(
                 title: "Manage Printers",
                 description: "Setup your printer devices",
@@ -153,57 +157,68 @@ class _PrinterServiceStatusPanelState extends State<PrinterServiceStatusPanel> {
       elevation: 10.0,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+        child: Row(
           children: [
-            Row(
-              children: [
-                const Text(
-                  "Printer Service",
-                  style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      const Text(
+                        "Printer Service",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 8.0),
+                      Icon(
+                        status.icon,
+                        color: status.iconColor,
+                        size: 20.0,
+                      )
+                    ],
                   ),
-                ),
-                const SizedBox(width: 8.0),
-                Icon(
-                  status.icon,
-                  color: status.iconColor,
-                  size: 20.0,
+                  Row(
+                    children: [
+                      Text(
+                        "Status: ",
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).hintColor,
+                        ),
+                      ),
+                      Text(
+                        status.name,
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          color: Theme.of(context).hintColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10.0),
+
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                child: status == ForegroundServiceStatus.loading
+                    ? const Center(
+                  child: CircularProgressIndicator(),
                 )
-              ],
-            ),
-            Row(
-              children: [
-                Text(
-                  "Status: ",
-                  style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).hintColor,
-                  ),
+                    : PrimaryButton(
+                  onTap: _onTap,
+                  text: status == ForegroundServiceStatus.stopped ? "Start" : "Stop",
                 ),
-                Text(
-                  status.name,
-                  style: TextStyle(
-                    fontSize: 12.0,
-                    color: Theme.of(context).hintColor,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10.0),
-            AnimatedSize(
-              duration: const Duration(milliseconds: 300),
-              child: status == ForegroundServiceStatus.loading
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : PrimaryButton(
-                      onTap: _onTap,
-                      text: status == ForegroundServiceStatus.stopped ? "Start" : "Stop",
-                    ),
+              ),
             ),
           ],
         ),
