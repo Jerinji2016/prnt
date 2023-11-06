@@ -3,12 +3,14 @@ package com.jerin.prnt
 import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.IBinder
+import android.os.IInterface
+import android.os.Parcel
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import java.io.FileDescriptor
 
 class ForegroundService : Service() {
     companion object {
@@ -20,7 +22,10 @@ class ForegroundService : Service() {
 
         private const val NOTIFICATION_ID = 0x2018
 
-        fun start(context: Context) {
+        fun start() {
+            val context = App.instance?.applicationContext
+                ?: throw NullPointerException("No Application Context was found")
+
             Log.d(TAG, "startService: ")
             ContextCompat.startForegroundService(
                 context,
@@ -49,8 +54,8 @@ class ForegroundService : Service() {
             )
 
             NotificationCompat.Builder(this, SERVICE_NOTIFICATION_CHANNEL_ID).apply {
-                setContentTitle("PrintBot")
-                setContentText("Printer Service Running (Dineazy)")
+                setContentTitle("Print service Running")
+                setContentText("Tap to manage")
                 setContentIntent(pendingIntent)
                 setSmallIcon(android.R.drawable.ic_menu_info_details)
                 setOnlyAlertOnce(true)

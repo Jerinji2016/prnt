@@ -26,17 +26,7 @@ class MainActivity : FlutterActivity(), MethodChannel.MethodCallHandler {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationChannel = NotificationChannel(
-                ForegroundService.SERVICE_NOTIFICATION_CHANNEL_ID,
-                "Service Notification",
-                NotificationManager.IMPORTANCE_HIGH
-            )
 
-            val manager = getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(notificationChannel)
-            Log.d(TAG, "onCreate: Notification Channel Created")
-        }
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -65,7 +55,7 @@ class MainActivity : FlutterActivity(), MethodChannel.MethodCallHandler {
 
             startServiceMethod -> {
                 try {
-                    ForegroundService.start(applicationContext)
+                    ForegroundService.start()
                     result.success(true)
                 } catch (e: Exception) {
                     Log.e(TAG, "onMethodCall: ", e)

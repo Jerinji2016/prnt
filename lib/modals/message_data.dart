@@ -1,16 +1,15 @@
 class MessageData<T> {
-  final List<dynamic> messageList;
+  final String type;
+
+  final String channel;
+
+  final T data;
 
   final DateTime timestamp;
 
-  MessageData(
-    this.messageList, [
-    DateTime? timestamp,
-  ]) : timestamp = timestamp ?? DateTime.now();
-
-  String get type => messageList.first;
-
-  String get channel => messageList[1];
-
-  T get data => messageList.last;
+  MessageData(List<dynamic> messageList)
+      : type = messageList.first,
+        channel = messageList[1],
+        data = messageList.last,
+        timestamp = DateTime.now();
 }

@@ -2,8 +2,6 @@ import 'package:pos_printer_manager/models/pos_printer.dart';
 import 'package:pos_printer_manager/pos_printer_manager.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
 
-import '../widgets/printer_connection_panel.dart';
-
 typedef POSPrinterList = List<POSPrinter>;
 typedef POSPrinterIterable = Iterable<POSPrinter>;
 
@@ -17,9 +15,9 @@ typedef USBPrinterList = List<USBPrinter>;
 typedef USBPrinterIterable = Iterable<USBPrinter>;
 
 typedef OnPrinterSelected = void Function(
-  PrinterConnectionType type,
+  ConnectionType type,
   POSPrinter printer,
   PrinterManager manager,
 );
 
-typedef POSPrintersMap = Map<PrinterConnectionType, POSPrinterIterable>;
+typedef POSPrintersMap = Map<ConnectionType, POSPrinterIterable>;

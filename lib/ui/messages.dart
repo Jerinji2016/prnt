@@ -6,6 +6,8 @@ import 'package:image/image.dart' as img;
 import 'package:pos_printer_manager/models/pos_printer.dart';
 import 'package:pos_printer_manager/pos_printer_manager.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
+import 'package:prnt/connection_adapters/impl.dart';
+import 'package:prnt/helpers/extensions.dart';
 import 'package:provider/provider.dart';
 
 import '../helpers/utils.dart';
@@ -14,8 +16,8 @@ import '../providers/data_provider.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/printer_connection_panel.dart';
 
-class MessageLogScreen extends StatelessWidget {
-  const MessageLogScreen({Key? key}) : super(key: key);
+class MessagesScreen extends StatelessWidget {
+  const MessagesScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -231,14 +233,19 @@ class SelectPrinterDelegate extends StatefulWidget {
 
 class _SelectPrinterDelegateState extends State<SelectPrinterDelegate> {
   void _onPrinterSelected(
-    PrinterConnectionType type,
+    ConnectionType type,
     POSPrinter printer,
     PrinterManager manager,
   ) async {
     debugPrint("_SelectPrinterDelegateState._onPrinterSelected: ");
-    final manager = await type.adapter.connect(printer);
+    IPrinterConnectionAdapters? adapter = printer.connectionType?.getAdapter();
+    if (adapter == null) {
+      debugPrint("_SelectPrinterDelegateState._onPrinterSelected: ❌ERROR: Failed to get connection type");
+      return;
+    }
+    final manager = await adapter.connect(printer);
 
-    await type.adapter.dispatchPrint(manager, widget.data);
+    await adapter.dispatchPrint(manager, widget.data);
     if (mounted) {
       Navigator.pop(context);
     }
@@ -259,15 +266,15 @@ class _SelectPrinterDelegateState extends State<SelectPrinterDelegate> {
           ),
         ),
         PrinterConnectionPanel(
-          type: PrinterConnectionType.bluetooth,
+          type: ConnectionType.bluetooth,
           onPrinterTapped: _onPrinterSelected,
         ),
         PrinterConnectionPanel(
-          type: PrinterConnectionType.network,
+          type: ConnectionType.network,
           onPrinterTapped: _onPrinterSelected,
         ),
         PrinterConnectionPanel(
-          type: PrinterConnectionType.usb,
+          type: ConnectionType.usb,
           onPrinterTapped: _onPrinterSelected,
         ),
       ],

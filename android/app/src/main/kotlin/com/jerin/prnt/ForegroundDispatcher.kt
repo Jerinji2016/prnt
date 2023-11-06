@@ -34,10 +34,6 @@ class ForegroundDispatcher(private val context: Context) : MethodChannel.MethodC
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         Log.d(TAG, "onMethodCall: ${call.method}")
-
-        when(call.method) {
-
-        }
     }
 
     fun dispatch() {

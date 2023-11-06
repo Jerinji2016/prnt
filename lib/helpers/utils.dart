@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pos_printer_manager/pos_printer_manager.dart';
+import 'package:prnt/helpers/extensions.dart';
 import 'package:webcontent_converter/webcontent_converter.dart';
 
 import '../widgets/printer_connection_panel.dart';
@@ -45,18 +47,57 @@ void showToast(BuildContext context, String message, {Color? color}) => Scaffold
     );
 
 Future<POSPrintersMap> getPrinters() async {
-  Map<PrinterConnectionType, POSPrinterIterable> printerMap = {};
+  Map<ConnectionType, POSPrinterIterable> printerMap = {};
 
-  List<MapEntry<PrinterConnectionType, POSPrinterIterable>> responses = await Future.wait(
+  List<MapEntry<ConnectionType, POSPrinterIterable>> responses = await Future.wait(
     [
-      PrinterConnectionType.network,
-      PrinterConnectionType.bluetooth,
+      ConnectionType.network,
+      ConnectionType.bluetooth,
     ].map((e) async {
-      POSPrinterIterable printers = await e.adapter.scan();
+      POSPrinterIterable printers = await e.getAdapter().scan();
       return MapEntry(e, printers);
     }),
   );
 
+  responses.removeWhere((element) => element.value.isEmpty);
   printerMap.addEntries(responses);
   return printerMap;
+}
+
+Future<List<int>> testTicket() async {
+  final profile = await CapabilityProfile.load();
+  final generator = Generator(PaperSize.mm80, profile);
+  List<int> bytes = [];
+
+  bytes += generator.text('Regular: aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ');
+  bytes += generator.text(
+    'Special 1: àÀ èÈ éÉ ûÛ üÜ çÇ ôÔ',
+    styles: const PosStyles(codeTable: 'CP1252'),
+  );
+  bytes += generator.text(
+    'Special 2: blåbærgrød',
+    styles: const PosStyles(codeTable: 'CP1252'),
+  );
+
+  bytes += generator.text(
+    'Bold text',
+    styles: const PosStyles(bold: true),
+  );
+  bytes += generator.text('Reverse text', styles: const PosStyles(reverse: true));
+  bytes += generator.text('Underlined text', styles: const PosStyles(underline: true), linesAfter: 1);
+  bytes += generator.text('Align left', styles: const PosStyles(align: PosAlign.left));
+  bytes += generator.text('Align center', styles: const PosStyles(align: PosAlign.center));
+  bytes += generator.text('Align right', styles: const PosStyles(align: PosAlign.right), linesAfter: 1);
+
+  bytes += generator.text(
+    'Text size 200%',
+    styles: const PosStyles(
+      height: PosTextSize.size2,
+      width: PosTextSize.size2,
+    ),
+  );
+
+  bytes += generator.feed(2);
+  bytes += generator.cut();
+  return bytes;
 }

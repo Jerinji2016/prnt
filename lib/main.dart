@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:prnt/helpers/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'db/db.dart';
 import 'helpers/globals.dart';
+import 'helpers/utils.dart';
 import 'providers/data_provider.dart';
 import 'providers/theme_provider.dart';
 import 'service/foreground_service.dart';
@@ -13,9 +14,12 @@ import 'ui/login.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await ForegroundService.registerHeadlessEntry();
   sharedPreferences = await SharedPreferences.getInstance();
-  getPrinters();
+  await Future.wait([
+    ForegroundService.registerHeadlessEntry(),
+    DB.initializeDB(),
+    getPrinters(),
+  ]);
 
   runApp(
     const PrntApp(),

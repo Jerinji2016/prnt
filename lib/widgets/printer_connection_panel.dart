@@ -1,40 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:pos_printer_manager/enums/connection_type.dart';
 import 'package:pos_printer_manager/models/pos_printer.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
+import 'package:prnt/helpers/extensions.dart';
 import 'package:provider/provider.dart';
 
-import '../connection_adapters/bluetooth_adapter.dart';
 import '../connection_adapters/impl.dart';
-import '../connection_adapters/network_adapter.dart';
-import '../connection_adapters/usb_adapter.dart';
 import '../helpers/types.dart';
 
-enum PrinterConnectionType {
-  bluetooth(
-    title: "Bluetooth",
-    adapter: BluetoothAdapter(),
-  ),
-  network(
-    title: "Network",
-    adapter: NetworkAdapter(),
-  ),
-  usb(
-    title: "USB",
-    adapter: USBAdapter(),
-  );
-
-  final String title;
-  final IPrinterConnectionAdapters adapter;
-
-  const PrinterConnectionType({
-    required this.title,
-    required this.adapter,
-  });
-}
-
 class PrinterConnectionPanel extends StatefulWidget {
-  final PrinterConnectionType type;
+  final ConnectionType type;
   final OnPrinterSelected? onPrinterTapped;
 
   const PrinterConnectionPanel({
@@ -54,7 +30,7 @@ class _PrinterConnectionPanelState extends State<PrinterConnectionPanel> with Pr
   void initState() {
     super.initState();
 
-    registerAdapter(widget.type.adapter);
+    registerAdapter(widget.type.getAdapter());
 
     SchedulerBinding.instance.addPostFrameCallback(
       (timeStamp) => _scanForDevices(),
@@ -64,7 +40,7 @@ class _PrinterConnectionPanelState extends State<PrinterConnectionPanel> with Pr
   void _scanForDevices() async {
     setState(() => _isLoading = true);
     final printers = await scan();
-    debugPrint("_PrinterConnectionPanelState._scanForDevices: ✅ Found ${printers.length} ${widget.type.title}");
+    debugPrint("_PrinterConnectionPanelState._scanForDevices: ✅ Found ${printers.length} ${widget.type.formattedType}");
     setState(() => _isLoading = false);
   }
 
@@ -118,7 +94,7 @@ class _PrinterConnectionPanelState extends State<PrinterConnectionPanel> with Pr
                   children: [
                     Expanded(
                       child: Text(
-                        widget.type.title,
+                        widget.type.formattedType,
                         style: const TextStyle(
                           fontSize: 18.0,
                           fontWeight: FontWeight.bold,
@@ -157,7 +133,7 @@ class _PrinterConnectionPanelState extends State<PrinterConnectionPanel> with Pr
                       return Center(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: Text('No ${widget.type.title} found!'),
+                          child: Text('No ${widget.type.formattedType} found!'),
                         ),
                       );
                     }

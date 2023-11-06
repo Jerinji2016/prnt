@@ -8,6 +8,7 @@ import 'package:image/image.dart' as img;
 import 'package:pos_printer_manager/models/pos_printer.dart';
 import 'package:pos_printer_manager/pos_printer_manager.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
+import 'package:prnt/helpers/extensions.dart';
 import 'package:redis/redis.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_android/shared_preferences_android.dart';
@@ -122,9 +123,9 @@ void _dispatchPrint(PrintMessageData printMessageData) async {
   POSPrintersMap printerMap = await getPrinters();
 
   POSPrinter? printer;
-  PrinterConnectionType? type;
+  ConnectionType? type;
 
-  for (PrinterConnectionType connectionType in printerMap.keys) {
+  for (ConnectionType connectionType in printerMap.keys) {
     POSPrinterIterable? printers = printerMap[connectionType];
     if (printers == null) continue;
 
@@ -146,7 +147,7 @@ void _dispatchPrint(PrintMessageData printMessageData) async {
     return;
   }
 
-  PrinterManager manager = await type.adapter.connect(printer);
+  PrinterManager manager = await type.getAdapter().connect(printer);
   debugPrint("_dispatchPrint: ✅ Connected to ${printer.name} | ${printer.address}");
 
   final bytes = await generateImageBytesFromHtml(printMessageData.data.template);
@@ -163,6 +164,6 @@ void _dispatchPrint(PrintMessageData printMessageData) async {
   printBytes += generator.feed(2);
   printBytes += generator.cut();
 
-  await type.adapter.dispatchPrint(manager, printBytes);
+  await type.getAdapter().dispatchPrint(manager, printBytes);
   debugPrint("dispatchPrint: ✅ Print Dispatched successfully");
 }
