@@ -1,7 +1,4 @@
-import 'dart:typed_data';
-
 import 'package:flutter/cupertino.dart';
-import 'package:image/image.dart' as img;
 import 'package:pos_printer_manager/models/pos_printer.dart';
 import 'package:pos_printer_manager/pos_printer_manager.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';

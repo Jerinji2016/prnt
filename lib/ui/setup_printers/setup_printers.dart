@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:pos_printer_manager/models/pos_printer.dart';
-import 'package:prnt/ui/setup_printers/setup_printers.vm.dart';
 import 'package:provider/provider.dart';
 
 import '../../helpers/extensions.dart';
 import '../../widgets/primary_button.dart';
+import 'setup_printers.vm.dart';
 
 class SetupPrintersScreen extends StatefulWidget {
   const SetupPrintersScreen({Key? key}) : super(key: key);

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:prnt/modals/message_data.dart';
+import 'message_data.dart';
 
 class PrintMessageData extends MessageData {
   PrintMessageData(super.messageList);

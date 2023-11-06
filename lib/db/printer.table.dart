@@ -1,8 +1,8 @@
 import 'package:pos_printer_manager/enums/connection_type.dart';
 import 'package:pos_printer_manager/models/pos_printer.dart';
-import 'package:prnt/helpers/types.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../helpers/types.dart';
 import 'db.dart';
 
 class PrinterTable {

@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:prnt/ui/home.dart';
 import 'package:provider/provider.dart';
 
 import '../helpers/api_manager.dart';
@@ -11,6 +10,7 @@ import '../modals/user_profile.dart';
 import '../providers/data_provider.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/primary_text_button.dart';
+import 'home.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);

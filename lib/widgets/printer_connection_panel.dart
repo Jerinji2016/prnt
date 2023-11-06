@@ -3,10 +3,10 @@ import 'package:flutter/scheduler.dart';
 import 'package:pos_printer_manager/enums/connection_type.dart';
 import 'package:pos_printer_manager/models/pos_printer.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
-import 'package:prnt/helpers/extensions.dart';
 import 'package:provider/provider.dart';
 
 import '../connection_adapters/impl.dart';
+import '../helpers/extensions.dart';
 import '../helpers/types.dart';
 
 class PrinterConnectionPanel extends StatefulWidget {

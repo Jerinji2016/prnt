@@ -6,10 +6,10 @@ import 'package:image/image.dart' as img;
 import 'package:pos_printer_manager/models/pos_printer.dart';
 import 'package:pos_printer_manager/pos_printer_manager.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
-import 'package:prnt/connection_adapters/impl.dart';
-import 'package:prnt/helpers/extensions.dart';
 import 'package:provider/provider.dart';
 
+import '../connection_adapters/impl.dart';
+import '../helpers/extensions.dart';
 import '../helpers/utils.dart';
 import '../modals/print_data.dart';
 import '../providers/data_provider.dart';

@@ -1,6 +1,7 @@
-import 'package:prnt/db/message.table.dart';
-import 'package:prnt/db/printer.table.dart';
 import 'package:sqflite/sqflite.dart';
+
+import 'message.table.dart';
+import 'printer.table.dart';
 
 class DB {
   static final DB _mInstance = DB._internal();
