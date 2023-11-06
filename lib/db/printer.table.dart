@@ -1,5 +1,8 @@
 import 'package:pos_printer_manager/enums/connection_type.dart';
+import 'package:pos_printer_manager/models/bluetooth_printer.dart';
+import 'package:pos_printer_manager/models/network_printer.dart';
 import 'package:pos_printer_manager/models/pos_printer.dart';
+import 'package:pos_printer_manager/models/usb_printer.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../helpers/types.dart';
@@ -20,13 +23,25 @@ class PrinterTable {
 
   Database get _db => DB.getDatabaseInstance();
 
-  POSPrinter getPOSPrinterFromCursor(Map<String, dynamic> json) => POSPrinter(
-        id: json[id],
-        name: json[name],
-        address: json[address],
-        type: json[type],
-        connectionType: ConnectionType.values[json[connectionType]],
-      );
+  POSPrinter getPOSPrinterFromCursor(Map<String, dynamic> json) {
+    ConnectionType connectionType = ConnectionType.values[json[PrinterTable.connectionType]];
+
+    POSPrinter printer = POSPrinter(
+      id: json[id],
+      name: json[name],
+      address: json[address],
+      type: json[type],
+      connectionType: ConnectionType.values[json[connectionType]],
+    );
+    switch(connectionType) {
+      case ConnectionType.network:
+        return printer as NetWorkPrinter;
+      case ConnectionType.bluetooth:
+        return printer as BluetoothPrinter;
+      case ConnectionType.usb:
+        return printer as USBPrinter;
+    }
+  }
 
   Future<POSPrinterIterable> getPrinters() async {
     POSPrinterList printers = [];

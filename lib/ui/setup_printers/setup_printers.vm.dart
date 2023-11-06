@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:pos_printer_manager/models/pos_printer.dart';
-import 'package:pos_printer_manager/pos_printer_manager.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
 
+import '../../connection_adapters/impl.dart';
 import '../../db/printer.table.dart';
 import '../../helpers/extensions.dart';
 import '../../helpers/types.dart';
@@ -77,13 +77,13 @@ class SetUpPrintersViewModal extends ChangeNotifier {
   void testPrint(POSPrinter printer) async {
     debugPrint("SetUpPrintersViewModal.testPrint: ${printer.name}");
     final bytes = await testTicket();
-    ConnectionType? connectionType = printer.connectionType;
-    if (connectionType == null) {
-      debugPrint("_dispatchPrint: ❌ERROR: Unknown Printer connection type");
+    IPrinterConnectionAdapters? adapter = printer.connectionType?.getAdapter();
+    if (adapter == null) {
+      debugPrint("_dispatchPrint: ❌ERROR: Failed to get Printer Connection Adapter");
       return;
     }
 
-    PrinterManager manager = await connectionType.getAdapter().connect(printer);
-    await connectionType.getAdapter().dispatchPrint(manager, bytes);
+    PrinterManager manager = await adapter.connect(printer);
+    await adapter.dispatchPrint(manager, bytes);
   }
 }

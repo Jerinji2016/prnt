@@ -22,7 +22,9 @@ class _SetupPrintersScreenState extends State<SetupPrintersScreen> {
     super.initState();
 
     SchedulerBinding.instance.addPostFrameCallback(
-      (timeStamp) => _viewModal.scanPrinters(),
+      (timeStamp) => _viewModal
+        ..scanPrinters()
+        ..getSavedPrinters(),
     );
   }
 

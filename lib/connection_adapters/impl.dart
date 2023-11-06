@@ -62,12 +62,5 @@ mixin class PrinterConnectionMixin<X extends PrinterManager> implements IPrinter
   }
 
   @override
-  Future<void> dispatchPrint([PrinterManager? printerManager, List<int>? data]) async {
-    // final data = await testTicket();
-    // if ((viewModal.printerManager ?? printerManager) == null) {
-    //   Logger.instance.error("Not connected to printer");
-    //   throw "Not connected to printer";
-    // }
-    // return _adapter.dispatchPrint(viewModal.printerManager!, data);
-  }
+  Future<void> dispatchPrint(PrinterManager printerManager, List<int> data) async {}
 }
