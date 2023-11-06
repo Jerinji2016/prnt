@@ -84,7 +84,6 @@ class SetUpPrintersViewModal extends ChangeNotifier {
     }
 
     PrinterManager manager = await connectionType.getAdapter().connect(printer);
-
-    // await connectionType.getAdapter().dispatchPrint(manager, bytes);
+    await connectionType.getAdapter().dispatchPrint(manager, bytes);
   }
 }
