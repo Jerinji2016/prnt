@@ -17,7 +17,7 @@ void main() async {
   sharedPreferences = await SharedPreferences.getInstance();
   await Future.wait([
     ForegroundService.registerHeadlessEntry(),
-    DB.initializeDB(),
+    DB.initialize(),
     getPrinters(),
   ]);
 

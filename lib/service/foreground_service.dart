@@ -10,10 +10,13 @@ import 'package:pos_printer_manager/pos_printer_manager.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
 import 'package:redis/redis.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 // ignore: depend_on_referenced_packages
 import 'package:shared_preferences_android/shared_preferences_android.dart';
+import 'package:webcontent_converter/webcontent_converter.dart';
 
+import '../db/db.dart';
+import '../db/message.table.dart';
+import '../db/printer.table.dart';
 import '../helpers/extensions.dart';
 import '../helpers/globals.dart';
 import '../helpers/types.dart';
@@ -76,13 +79,33 @@ class ForegroundService {
 void headlessEntry() async {
   debugPrint("headlessEntry: default headless entry");
   WidgetsFlutterBinding.ensureInitialized();
+  DartPluginRegistrant.ensureInitialized();
   SharedPreferencesAndroid.registerWith();
+  WebcontentConverter.ensureInitialized();
+  debugPrint("headlessEntry: ensure initialised");
 
+  await DB.initialize();
   sharedPreferences = await SharedPreferences.getInstance();
   await _registerWithRedisServer();
 }
 
 Future<void> runServerOnMainIsolate() => _registerWithRedisServer();
+
+Future<void> stopServerOnMainIsolate() async {
+  DataProvider dataProvider = DataProvider();
+  String revenueCenterId = dataProvider.profile.revenueCenterId;
+  String topic = "prod_dineazy_$revenueCenterId";
+
+  final cmd = await RedisConnection().connect(
+    RedisConfig.host,
+    RedisConfig.port,
+  );
+
+  await cmd.send_object(['AUTH', RedisConfig.password]);
+  final pubSub = PubSub(cmd);
+  pubSub.unsubscribe([topic]);
+  debugPrint("stopServerOnMainIsolate: ✅ Unsubscribed successfully");
+}
 
 Future<void> _registerWithRedisServer() async {
   DataProvider dataProvider = DataProvider();
@@ -102,7 +125,7 @@ Future<void> _registerWithRedisServer() async {
   final stream = pubSub.getStream();
   await for (final msg in stream) {
     debugPrint("_registerWithRedisServer: new message");
-    MessageData messageData = MessageData(msg);
+    MessageData messageData = MessageData.fromMessageList(msg);
 
     if (messageData.type == "subscribe" && messageData.data == 1) {
       debugPrint("_PubSubScreenState._onSubscribeTapped: ✅ Subscribed successfully");
@@ -111,8 +134,12 @@ Future<void> _registerWithRedisServer() async {
 
     if (messageData.type == "message") {
       log(messageData.data);
-      PrintMessageData printMessageData = PrintMessageData(msg);
-      _dispatchPrint(printMessageData);
+      PrintMessageData printMessageData = PrintMessageData.fromMessageList(msg);
+
+      await MessageTable().add(printMessageData);
+      debugPrint("_dispatchPrint: ✅ Message saved successfully");
+
+      dispatchPrint(printMessageData);
       continue;
     }
   }
@@ -120,8 +147,8 @@ Future<void> _registerWithRedisServer() async {
   debugPrint("_registerWithRedisServer: finishing connection...");
 }
 
-void _dispatchPrint(PrintMessageData printMessageData) async {
-  POSPrinterIterable printers = await getPrinters();
+Future<void> dispatchPrint(PrintMessageData printMessageData) async {
+  POSPrinterIterable printers = await PrinterTable().getPrinters();
 
   int index = printers.toList().indexWhere(
         (element) => element.name == printMessageData.data.printer.value,
@@ -154,6 +181,7 @@ void _dispatchPrint(PrintMessageData printMessageData) async {
 
   final profile = await CapabilityProfile.load();
   final generator = Generator(PaperSize.mm80, profile);
+  generator.reset();
   List<int> printBytes = generator.imageRaster(image);
   printBytes += generator.feed(2);
   printBytes += generator.cut();

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'message.table.dart';
@@ -17,7 +18,7 @@ class DB {
 
   static Database getDatabaseInstance() => _mInstance._db;
 
-  static Future<void> initializeDB() async {
+  static Future<void> initialize() async {
     final String path = await getDatabasesPath();
     final String dbPath = "$path/$_dbName";
 
@@ -35,5 +36,7 @@ class DB {
         ]);
       },
     );
+
+    debugPrint("DB.initializeDB: ✅ Database Initialized");
   }
 }

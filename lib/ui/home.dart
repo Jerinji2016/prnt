@@ -103,6 +103,8 @@ class PrinterServiceStatusPanel extends StatefulWidget {
 class _PrinterServiceStatusPanelState extends State<PrinterServiceStatusPanel> {
   ForegroundServiceStatus status = ForegroundServiceStatus.stopped;
 
+  bool _runOnUiIsolate = true;
+
   @override
   void initState() {
     super.initState();
@@ -117,17 +119,31 @@ class _PrinterServiceStatusPanelState extends State<PrinterServiceStatusPanel> {
   }
 
   void _runOnUIIsolate() async {
+    bool isServiceRunning = status == ForegroundServiceStatus.running;
+
     setState(() => status = ForegroundServiceStatus.loading);
-    runServerOnMainIsolate();
-    await Future.delayed(const Duration(seconds: 3));
-    if (mounted) {
-      showToast(context, "Subscribed successfully", color: Colors.green);
+    ForegroundServiceStatus nextStatus;
+    if (!isServiceRunning) {
+      runServerOnMainIsolate();
+      nextStatus = ForegroundServiceStatus.running;
+      if (mounted) {
+        showToast(context, "Subscribed successfully", color: Colors.green);
+      }
+    } else {
+      await stopServerOnMainIsolate();
+      nextStatus = ForegroundServiceStatus.stopped;
+      if (mounted) {
+        showToast(context, "Unsubscribed successfully");
+      }
     }
-    setState(() => status = ForegroundServiceStatus.running);
+    await Future.delayed(const Duration(seconds: 1));
+    setState(() => status = nextStatus);
   }
 
   void _onTap() async {
-    // return _runOnUIIsolate();
+    if (_runOnUiIsolate) {
+      return _runOnUIIsolate();
+    }
 
     bool isServiceRunning = status == ForegroundServiceStatus.running;
     setState(() => status = ForegroundServiceStatus.loading);
@@ -143,6 +159,17 @@ class _PrinterServiceStatusPanelState extends State<PrinterServiceStatusPanel> {
     }
 
     _loadServiceStatus();
+  }
+
+  void _onSwitchTapped(bool value) {
+    if(status == ForegroundServiceStatus.running) {
+      showToast(context, "Stop service to toggle");
+      return;
+    }
+    if(!value) {
+      showToast(context, "Service won't work as expected");
+    }
+    setState(() => _runOnUiIsolate = value);
   }
 
   @override
@@ -201,8 +228,30 @@ class _PrinterServiceStatusPanelState extends State<PrinterServiceStatusPanel> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10.0),
-
+                  Row(
+                    children: [
+                      SizedBox(
+                        height: 30.0,
+                        width: 40.0,
+                        child: FittedBox(
+                          child: Switch(
+                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            value: _runOnUiIsolate,
+                            onChanged: _onSwitchTapped,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8.0),
+                      Text(
+                        _runOnUiIsolate ? "ON FOREGROUND" : "ON BACKGROUND",
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          color: Theme.of(context).hintColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8.0),
                 ],
               ),
             ),
@@ -212,12 +261,12 @@ class _PrinterServiceStatusPanelState extends State<PrinterServiceStatusPanel> {
                 duration: const Duration(milliseconds: 300),
                 child: status == ForegroundServiceStatus.loading
                     ? const Center(
-                  child: CircularProgressIndicator(),
-                )
+                        child: CircularProgressIndicator(),
+                      )
                     : PrimaryButton(
-                  onTap: _onTap,
-                  text: status == ForegroundServiceStatus.stopped ? "Start" : "Stop",
-                ),
+                        onTap: _onTap,
+                        text: status == ForegroundServiceStatus.stopped ? "Start" : "Stop",
+                      ),
               ),
             ),
           ],

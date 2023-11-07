@@ -49,15 +49,6 @@ class DataProvider extends ChangeNotifier {
 
   Restaurant? get restaurant => _restaurant;
 
-  final List<PrintMessageData> _messages = [];
-
-  Iterable<PrintMessageData> get messages => _messages;
-
-  void saveMessage(PrintMessageData data) {
-    _messages.add(data);
-    notifyListeners();
-  }
-
   void logout() {
     debugPrint("DataProvider.logout: ");
     sharedPreferences.remove(_profileKey);

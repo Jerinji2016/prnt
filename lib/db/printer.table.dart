@@ -26,20 +26,31 @@ class PrinterTable {
   POSPrinter getPOSPrinterFromCursor(Map<String, dynamic> json) {
     ConnectionType connectionType = ConnectionType.values[json[PrinterTable.connectionType]];
 
-    POSPrinter printer = POSPrinter(
-      id: json[id],
-      name: json[name],
-      address: json[address],
-      type: json[type],
-      connectionType: ConnectionType.values[json[connectionType]],
-    );
-    switch(connectionType) {
+    switch (connectionType) {
       case ConnectionType.network:
-        return printer as NetWorkPrinter;
+        return NetWorkPrinter(
+          id: json[id],
+          name: json[name],
+          address: json[address],
+          type: json[type],
+          connectionType: connectionType,
+        );
       case ConnectionType.bluetooth:
-        return printer as BluetoothPrinter;
+        return BluetoothPrinter(
+          id: json[id],
+          name: json[name],
+          address: json[address],
+          type: json[type],
+          connectionType: connectionType,
+        );
       case ConnectionType.usb:
-        return printer as USBPrinter;
+        return USBPrinter(
+          id: json[id],
+          name: json[name],
+          address: json[address],
+          type: json[type],
+          connectionType: connectionType,
+        );
     }
   }
 

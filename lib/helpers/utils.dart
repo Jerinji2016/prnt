@@ -31,6 +31,7 @@ Future<List<int>> generateImageBytesFromHtml(String content) async {
 
 void showToast(BuildContext context, String message, {Color? color}) => ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
+        duration: const Duration(seconds: 2),
         content: Center(
           child: Text(
             message,

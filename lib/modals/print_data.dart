@@ -3,13 +3,17 @@ import 'dart:convert';
 import 'message_data.dart';
 
 class PrintMessageData extends MessageData {
-  PrintMessageData(super.messageList);
+  PrintMessageData.fromMessageList(super.messageList) : super.fromMessageList();
+
+  PrintMessageData(super.type, super.channel, super.data, super.timestamp);
 
   @override
   PrintData get data {
     Map<String, dynamic> data = jsonDecode(super.data);
     return PrintData(data);
   }
+
+  String get dataEncoded => jsonEncode(data._json);
 }
 
 class PrintData {

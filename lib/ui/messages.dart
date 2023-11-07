@@ -2,56 +2,108 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:image/image.dart' as img;
 import 'package:pos_printer_manager/models/pos_printer.dart';
 import 'package:pos_printer_manager/pos_printer_manager.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
-import 'package:provider/provider.dart';
 
 import '../connection_adapters/impl.dart';
+import '../db/message.table.dart';
 import '../helpers/extensions.dart';
+import '../helpers/types.dart';
 import '../helpers/utils.dart';
+import '../modals/message_data.dart';
 import '../modals/print_data.dart';
-import '../providers/data_provider.dart';
+import '../service/foreground_service.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/printer_connection_panel.dart';
 
-class MessagesScreen extends StatelessWidget {
+class MessagesScreen extends StatefulWidget {
   const MessagesScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    DataProvider dataProvider = Provider.of<DataProvider>(context);
-    Iterable<PrintMessageData> messages = dataProvider.messages;
+  State<MessagesScreen> createState() => _MessagesScreenState();
+}
 
+class _MessagesScreenState extends State<MessagesScreen> {
+  final MessageRecordList _messages = [];
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    SchedulerBinding.instance.addPostFrameCallback(
+      (timeStamp) => _loadMessages(),
+    );
+  }
+
+  void _loadMessages() async {
+    debugPrint("_MessagesScreenState._loadMessages: ");
+    setState(() => _isLoading = true);
+
+    MessageRecordIterable messages = await MessageTable().getAll();
+    _messages
+      ..clear()
+      ..addAll(messages);
+
+    //  simply to get loading feeling
+    await Future.delayed(const Duration(seconds: 1));
+
+    setState(() => _isLoading = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Message Log"),
         elevation: 2.0,
+        actions: [
+          IconButton(
+            onPressed: _loadMessages,
+            icon: const Icon(Icons.sync),
+          ),
+        ],
       ),
-      body: ListView.builder(
-        itemBuilder: (context, index) {
-          PrintMessageData message = messages.elementAt(index);
-
-          return MessageTile(
-            index: index,
-            messageData: message,
+      body: Builder(builder: (context) {
+        if (_isLoading) {
+          return const Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [CircularProgressIndicator(), SizedBox(height: 10.0), Text("Loading messages...")],
+            ),
           );
-        },
-        itemCount: messages.length,
-      ),
+        }
+
+        if (_messages.isEmpty) {
+          return const Center(
+            child: Text("No messages yet!"),
+          );
+        }
+
+        return ListView.builder(
+          itemBuilder: (context, index) {
+            MessageRecord message = _messages.elementAt(index);
+
+            return MessageTile(
+              index: index,
+              record: message,
+            );
+          },
+          itemCount: _messages.length,
+        );
+      }),
     );
   }
 }
 
 class MessageTile extends StatefulWidget {
   final int index;
-  final PrintMessageData messageData;
+  final MessageRecord record;
 
   const MessageTile({
     Key? key,
     required this.index,
-    required this.messageData,
+    required this.record,
   }) : super(key: key);
 
   @override
@@ -61,45 +113,22 @@ class MessageTile extends StatefulWidget {
 class _MessageTileState extends State<MessageTile> {
   bool _isPrintLoading = false;
 
-  PrintMessageData get message => widget.messageData;
+  PrintMessageData get message => widget.record.data;
 
   void _onViewTapped(BuildContext context, PrintMessageData message) => showModalBottomSheet(
         context: context,
         builder: (context) => ViewReceiptDelegate(data: message.data),
       );
 
-  void _onPrintTapped(BuildContext context, PrintMessageData message) async {
+  void _onPrintTapped(PrintMessageData message) async {
     setState(() => _isPrintLoading = true);
 
-    final bytes = await generateImageBytesFromHtml(message.data.template);
-    img.Image? image = img.decodeImage(Uint8List.fromList(bytes));
+    await dispatchPrint(message);
 
-    if (image == null) {
-      debugPrint("MessageLogScreen._onPrintTapped: ❌ERROR: Failed to convert to Image");
-      setState(() => _isPrintLoading = false);
-      if (context.mounted) {
-        showToast(context, "Failed to process receipt data");
-      }
-      return;
-    }
-
-    final profile = await CapabilityProfile.load();
-    final generator = Generator(PaperSize.mm80, profile);
-    List<int> printBytes = generator.imageRaster(image);
-    printBytes += generator.feed(2);
-    printBytes += generator.cut();
-
+    setState(() => _isPrintLoading = true);
     if (mounted) {
-      await showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (context) => SingleChildScrollView(
-          child: SelectPrinterDelegate(data: printBytes),
-        ),
-      );
+      showToast(context, "Print dispatched successfully");
     }
-
-    setState(() => _isPrintLoading = false);
   }
 
   @override
@@ -159,7 +188,7 @@ class _MessageTileState extends State<MessageTile> {
                     )
                   : PrimaryButton(
                       text: "Print",
-                      onTap: () => _onPrintTapped(context, message),
+                      onTap: () => _onPrintTapped(message),
                     ),
             ],
           ),

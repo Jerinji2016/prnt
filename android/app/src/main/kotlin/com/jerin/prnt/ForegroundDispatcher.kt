@@ -2,12 +2,12 @@ package com.jerin.prnt
 
 import android.content.Context
 import android.util.Log
+import app.mylekha.webcontent_converter.WebcontentConverterPlugin
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.embedding.engine.loader.ApplicationInfoLoader
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugins.GeneratedPluginRegistrant
 import io.flutter.view.FlutterCallbackInformation
 import java.util.concurrent.Executors
 
@@ -18,8 +18,6 @@ class ForegroundDispatcher(private val context: Context) : MethodChannel.MethodC
         private const val CALLBACK_METHOD_KEY = "fg-callback-method-key"
 
         private const val CHANNEL_NAME = "com.jerin.prnt/foreground"
-
-        private const val initializedMethod = "initialized";
 
         fun register(context: Context, callbackId: Long) {
             Executors.newCachedThreadPool().execute(
@@ -41,9 +39,8 @@ class ForegroundDispatcher(private val context: Context) : MethodChannel.MethodC
         val appBundlePath = info.flutterAssetsDir
         val assets = context.assets
 
-        flutterEngine = FlutterEngine(context.applicationContext)
+        flutterEngine = FlutterEngine(context)
         flutterEngine?.let {
-            GeneratedPluginRegistrant.registerWith(it)
             MethodChannel(it.dartExecutor, CHANNEL_NAME).apply {
                 channel = this
                 setMethodCallHandler(this@ForegroundDispatcher)

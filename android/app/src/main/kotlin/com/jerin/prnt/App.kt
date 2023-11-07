@@ -23,6 +23,7 @@ class App : FlutterApplication() {
     override fun onCreate() {
         super.onCreate()
         mInstance = this
+        Log.d(TAG, "onCreate: application instance created")
 
         createNotificationChannel()
     }
