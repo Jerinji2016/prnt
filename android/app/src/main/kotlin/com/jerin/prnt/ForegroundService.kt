@@ -1,9 +1,11 @@
 package com.jerin.prnt
 
 import android.app.Notification
+import android.app.Notification.FOREGROUND_SERVICE_IMMEDIATE
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -57,6 +59,9 @@ class ForegroundService : Service() {
                 setSmallIcon(android.R.drawable.ic_menu_info_details)
                 setOnlyAlertOnce(true)
                 setOngoing(true)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    foregroundServiceBehavior = FOREGROUND_SERVICE_IMMEDIATE
+                }
                 return build()
             }
         }
