@@ -219,7 +219,7 @@ class _ViewReceiptDelegateState extends State<ViewReceiptDelegate> {
   void initState() {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback(
-      (_) => generateImageBytesFromHtml(widget.data.template).then(
+      (_) => contentToImage(widget.data.template).then(
         (bytes) => setState(() {
           _imageBytes = Uint8List.fromList(bytes);
           _isLoading = false;
@@ -240,7 +240,7 @@ class _ViewReceiptDelegateState extends State<ViewReceiptDelegate> {
       child: Image.memory(
         _imageBytes,
         width: MediaQuery.of(context).size.shortestSide,
-        fit: BoxFit.fitWidth,
+        fit: BoxFit.contain,
         alignment: Alignment.topCenter,
         scale: 4.0,
       ),

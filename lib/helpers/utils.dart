@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pos_printer_manager/pos_printer_manager.dart';
-import 'package:webcontent_converter/webcontent_converter.dart';
 
 import 'extensions.dart';
 import 'types.dart';
@@ -22,12 +21,10 @@ Future<bool> stopForegroundService() async => await _channel.invokeMethod(_stopS
 
 Future<bool> isForegroundServiceRunning() async => await _channel.invokeMethod(_getServiceStatusMethod) as bool;
 
-Future<List<int>> generateImageBytesFromHtml(String content) async {
-  return await WebcontentConverter.contentToImage(
-    content: content,
-    executablePath: WebViewHelper.executablePath(),
-  );
-}
+Future<List<int>> contentToImage(String content) async => await _channel.invokeMethod(
+      "contentToImage",
+      content,
+    );
 
 void showToast(BuildContext context, String message, {Color? color}) => ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -56,8 +53,8 @@ Future<POSPrinterIterable> getPrinters() async {
     }),
   );
 
-  for(POSPrinterIterable printers in responses) {
-    if(printers.isNotEmpty) {
+  for (POSPrinterIterable printers in responses) {
+    if (printers.isNotEmpty) {
       allPrinters.addAll(printers);
     }
   }

@@ -17,7 +17,7 @@ dependencies:
     git:
       url: https://github.com/Jerinji2016/pos_printer_manager.git
       ref: master
-  webcontent_converter: ^0.0.8+3
+#  webcontent_converter: ^0.0.8+3
   image: ^4.1.3
   provider: ^6.0.5
   redis: ^4.0.0

@@ -12,7 +12,6 @@ import 'package:redis/redis.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // ignore: depend_on_referenced_packages
 import 'package:shared_preferences_android/shared_preferences_android.dart';
-import 'package:webcontent_converter/webcontent_converter.dart';
 
 import '../db/db.dart';
 import '../db/message.table.dart';
@@ -81,7 +80,7 @@ void headlessEntry() async {
   WidgetsFlutterBinding.ensureInitialized();
   DartPluginRegistrant.ensureInitialized();
   SharedPreferencesAndroid.registerWith();
-  WebcontentConverter.ensureInitialized();
+  // WebcontentConverter.ensureInitialized();
   debugPrint("headlessEntry: ensure initialised");
 
   await DB.initialize();
@@ -171,7 +170,7 @@ Future<void> dispatchPrint(PrintMessageData printMessageData) async {
   PrinterManager manager = await connectionType.getAdapter().connect(printer);
   debugPrint("_dispatchPrint: ✅ Connected to ${printer.name} | ${printer.address}");
 
-  final bytes = await generateImageBytesFromHtml(printMessageData.data.template);
+  final bytes = await contentToImage(printMessageData.data.template);
   img.Image? image = img.decodeImage(Uint8List.fromList(bytes));
 
   if (image == null) {

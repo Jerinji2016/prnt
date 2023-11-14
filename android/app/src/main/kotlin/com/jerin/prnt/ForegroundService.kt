@@ -71,7 +71,7 @@ class ForegroundService : Service() {
 
         startForeground(NOTIFICATION_ID, notification)
 
-        ForegroundDispatcher(applicationContext).dispatch()
+        ForegroundDispatcher(this).dispatch()
         instance = this
 
         return START_NOT_STICKY

@@ -2,22 +2,17 @@ package com.jerin.prnt
 
 import android.content.Context
 import android.util.Log
-import app.mylekha.webcontent_converter.WebcontentConverterPlugin
+import io.flutter.FlutterInjector
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.dart.DartExecutor
-import io.flutter.embedding.engine.loader.ApplicationInfoLoader
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
 import io.flutter.view.FlutterCallbackInformation
 import java.util.concurrent.Executors
 
-class ForegroundDispatcher(private val context: Context) : MethodChannel.MethodCallHandler {
+class ForegroundDispatcher(private val context: Context) {
     companion object {
         private const val TAG = "ForegroundDispatcher"
 
         private const val CALLBACK_METHOD_KEY = "fg-callback-method-key"
-
-        private const val CHANNEL_NAME = "com.jerin.prnt/foreground"
 
         fun register(context: Context, callbackId: Long) {
             Executors.newCachedThreadPool().execute(
@@ -28,23 +23,19 @@ class ForegroundDispatcher(private val context: Context) : MethodChannel.MethodC
 
     private var flutterEngine: FlutterEngine? = null
 
-    private var channel: MethodChannel? = null
-
-    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        Log.d(TAG, "onMethodCall: ${call.method}")
-    }
-
     fun dispatch() {
-        val info = ApplicationInfoLoader.load(context)
-        val appBundlePath = info.flutterAssetsDir
-        val assets = context.assets
-
         flutterEngine = FlutterEngine(context)
+
+        val flutterLoader = FlutterInjector.instance().flutterLoader()
+        if (!flutterLoader.initialized()) {
+            flutterLoader.startInitialization(context)
+        }
+        flutterLoader.ensureInitializationComplete(context, null)
+        val assets = context.assets
+        val appBundlePath = flutterLoader.findAppBundlePath()
+
         flutterEngine?.let {
-            MethodChannel(it.dartExecutor, CHANNEL_NAME).apply {
-                channel = this
-                setMethodCallHandler(this@ForegroundDispatcher)
-            }
+            AppChannel.registerChannel(context, it)
 
             val sharedPreferences = context.getSharedPreferences(TAG, Context.MODE_PRIVATE)
             val dartForegroundCallbackId = sharedPreferences.getLong(CALLBACK_METHOD_KEY, -1L)
@@ -75,7 +66,8 @@ class ForegroundDispatcher(private val context: Context) : MethodChannel.MethodC
                 putLong(CALLBACK_METHOD_KEY, dartForegroundMethodId)
                 apply()
             }
-            Log.d(TAG, "run: registered headless callbacks [$dartForegroundMethodId]")
+
+            Log.d(TAG, "run: ✅ Registered headless callbacks [$dartForegroundMethodId]")
         }
     }
 }
