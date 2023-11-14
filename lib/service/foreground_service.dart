@@ -153,7 +153,7 @@ Future<void> dispatchPrint(PrintMessageData printMessageData) async {
         (element) => element.name == printMessageData.data.printer.value,
       );
   if (index == -1) {
-    debugPrint("_dispatchPrint: ❌ERROR: Expected Printer(${printMessageData.data.printer.name}) was not found");
+    debugPrint("_dispatchPrint: ❌ERROR: Expected Printer(${printMessageData.data.printer.value}) was not found");
     return;
   }
 
