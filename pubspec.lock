@@ -182,10 +182,11 @@ packages:
   flutter_usb_printer:
     dependency: transitive
     description:
-      name: flutter_usb_printer
-      sha256: "5e83c1e03cdedd2e41ad3f3a2ce7c628fdcc489d03b5b40e3020e2df4ea1ce40"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: null_exception_handling
+      resolved-ref: "88d92d6218fa337e1d6aed2d8bccc32eb2190160"
+      url: "https://github.com/Jerinji2016/flutter_usb_printer.git"
+    source: git
     version: "0.1.0+1"
   flutter_web_plugins:
     dependency: transitive
@@ -388,8 +389,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: d64f8766bd2b76fda36b5e609c8dcbeb759cb9de
+      ref: support_prnt_app
+      resolved-ref: b5afa9c1890bd227a95ae7a36ae18437b7d57dd4
       url: "https://github.com/Jerinji2016/pos_printer_manager.git"
     source: git
     version: "0.0.5"
