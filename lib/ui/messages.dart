@@ -2,20 +2,14 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:pos_printer_manager/models/pos_printer.dart';
-import 'package:pos_printer_manager/pos_printer_manager.dart';
-import 'package:pos_printer_manager/services/printer_manager.dart';
 
-import '../connection_adapters/impl.dart';
 import '../db/message.table.dart';
-import '../helpers/extensions.dart';
 import '../helpers/types.dart';
 import '../helpers/utils.dart';
 import '../modals/message_data.dart';
 import '../modals/print_data.dart';
 import '../service/foreground_service.dart';
 import '../widgets/primary_button.dart';
-import '../widgets/printer_connection_panel.dart';
 
 class MessagesScreen extends StatefulWidget {
   const MessagesScreen({Key? key}) : super(key: key);
@@ -244,69 +238,6 @@ class _ViewReceiptDelegateState extends State<ViewReceiptDelegate> {
         alignment: Alignment.topCenter,
         scale: 4.0,
       ),
-    );
-  }
-}
-
-class SelectPrinterDelegate extends StatefulWidget {
-  final List<int> data;
-
-  const SelectPrinterDelegate({
-    Key? key,
-    required this.data,
-  }) : super(key: key);
-
-  @override
-  State<SelectPrinterDelegate> createState() => _SelectPrinterDelegateState();
-}
-
-class _SelectPrinterDelegateState extends State<SelectPrinterDelegate> {
-  void _onPrinterSelected(
-    ConnectionType type,
-    POSPrinter printer,
-    PrinterManager manager,
-  ) async {
-    debugPrint("_SelectPrinterDelegateState._onPrinterSelected: ");
-    IPrinterConnectionAdapters? adapter = printer.connectionType?.getAdapter();
-    if (adapter == null) {
-      debugPrint("_SelectPrinterDelegateState._onPrinterSelected: ❌ERROR: Failed to get connection type");
-      return;
-    }
-    final manager = await adapter.connect(printer);
-
-    await adapter.dispatchPrint(manager, widget.data);
-    if (mounted) {
-      Navigator.pop(context);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Text(
-            "Select Printer",
-            style: TextStyle(
-              fontSize: 18.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        PrinterConnectionPanel(
-          type: ConnectionType.bluetooth,
-          onPrinterTapped: _onPrinterSelected,
-        ),
-        PrinterConnectionPanel(
-          type: ConnectionType.network,
-          onPrinterTapped: _onPrinterSelected,
-        ),
-        PrinterConnectionPanel(
-          type: ConnectionType.usb,
-          onPrinterTapped: _onPrinterSelected,
-        ),
-      ],
     );
   }
 }
