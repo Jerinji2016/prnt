@@ -162,11 +162,11 @@ class _PrinterServiceStatusPanelState extends State<PrinterServiceStatusPanel> {
   }
 
   void _onSwitchTapped(bool value) {
-    if(status == ForegroundServiceStatus.running) {
+    if (status == ForegroundServiceStatus.running) {
       showToast(context, "Stop service to toggle");
       return;
     }
-    if(!value) {
+    if (!value) {
       showToast(context, "Service won't work as expected");
     }
     setState(() => _runOnUiIsolate = value);

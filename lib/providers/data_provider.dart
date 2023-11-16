@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../helpers/globals.dart';
-import '../modals/print_data.dart';
 import '../modals/restaurant.dart';
 import '../modals/user_profile.dart';
 
