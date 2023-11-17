@@ -246,7 +246,7 @@ class PrinterDetailsTile extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            printer.name ?? "Unknown Printer",
+                            "Name: ${printer.name ?? "Unknown Printer"}",
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,

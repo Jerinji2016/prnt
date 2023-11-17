@@ -10,7 +10,6 @@ import 'package:pos_printer_manager/pos_printer_manager.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
 import 'package:redis/redis.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 // ignore: depend_on_referenced_packages
 import 'package:shared_preferences_android/shared_preferences_android.dart';
 
@@ -19,7 +18,6 @@ import '../db/message.table.dart';
 import '../db/printer.table.dart';
 import '../helpers/extensions.dart';
 import '../helpers/globals.dart';
-import '../helpers/types.dart';
 import '../helpers/utils.dart';
 import '../modals/message_data.dart';
 import '../modals/print_data.dart';
@@ -148,17 +146,12 @@ Future<void> _registerWithRedisServer() async {
 }
 
 Future<void> dispatchPrint(PrintMessageData printMessageData) async {
-  POSPrinterIterable printers = await PrinterTable().getPrinters();
-
-  int index = printers.toList().indexWhere(
-        (element) => element.name == printMessageData.data.printer.value,
-      );
-  if (index == -1) {
+  POSPrinter? printer = await PrinterTable().getPrinterByName(printMessageData.data.printer.value);
+  if (printer == null) {
     debugPrint("_dispatchPrint: ❌ERROR: Expected Printer(${printMessageData.data.printer.value}) was not found");
     return;
   }
 
-  POSPrinter printer = printers.elementAt(index);
   ConnectionType? connectionType = printer.connectionType;
   if (connectionType == null) {
     debugPrint("_dispatchPrint: ❌ERROR: Unknown Printer connection type");

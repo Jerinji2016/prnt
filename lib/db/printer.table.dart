@@ -11,14 +11,24 @@ import 'db.dart';
 class PrinterTable {
   static const tableName = "Printer";
 
-  static const name = "name", id = "id", address = "address", connectionType = "connectionType", type = "type";
+  static const name = "name",
+      id = "id",
+      address = "address",
+      connectionType = "connectionType",
+      type = "type",
+      vendorId = "vendorId",
+      productId = "productId",
+      deviceId = "deviceId";
 
   static const createTableQuery = "CREATE TABLE $tableName ("
       "$id TEXT PRIMARY KEY, "
       "$name TEXT NOT NULL, "
       "$address TEXT,"
       "$connectionType INT, "
-      "$type INT "
+      "$type INT, "
+      "$vendorId INT, "
+      "$productId INT, "
+      "$deviceId INT "
       ")";
 
   Database get _db => DB.getDatabaseInstance();
@@ -50,6 +60,9 @@ class PrinterTable {
           address: json[address],
           type: json[type],
           connectionType: connectionType,
+          deviceId: json[deviceId],
+          vendorId: json[vendorId],
+          productId: json[productId],
         );
     }
   }
@@ -73,6 +86,9 @@ class PrinterTable {
         address: printer.address,
         connectionType: printer.connectionType?.index,
         type: printer.type,
+        vendorId: printer.vendorId,
+        productId: printer.productId,
+        deviceId: printer.deviceId,
       });
 
   Future<void> remove(POSPrinter printer) => _db.delete(
