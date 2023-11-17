@@ -117,10 +117,10 @@ packages:
     dependency: transitive
     description:
       name: dbus
-      sha256: "6f07cba3f7b3448d42d015bfd3d53fe12e5b36da2423f23838efc1d5fb31a263"
+      sha256: "365c771ac3b0e58845f39ec6deebc76e3276aa9922b0cc60840712094d9047ac"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.8"
+    version: "0.7.10"
   easy_logger:
     dependency: transitive
     description:
@@ -184,7 +184,7 @@ packages:
     description:
       path: "."
       ref: null_exception_handling
-      resolved-ref: "88d92d6218fa337e1d6aed2d8bccc32eb2190160"
+      resolved-ref: "0e008d98283b45721919839a1185792c7e465144"
       url: "https://github.com/Jerinji2016/flutter_usb_printer.git"
     source: git
     version: "0.1.0+1"
