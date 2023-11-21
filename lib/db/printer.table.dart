@@ -100,7 +100,7 @@ class PrinterTable {
   Future<POSPrinter?> getPrinterByName(String name) async {
     final cursor = await _db.query(
       tableName,
-      where: "$name=?",
+      where: "${PrinterTable.name}=?",
       whereArgs: [name],
     );
 
