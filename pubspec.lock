@@ -390,7 +390,7 @@ packages:
     description:
       path: "."
       ref: support_prnt_app
-      resolved-ref: "8c388067fdca2fd393e98ed79a67cad514e34c30"
+      resolved-ref: "8942e54486ff2b3d2983712e574b237a2d68ea7c"
       url: "https://github.com/Jerinji2016/pos_printer_manager.git"
     source: git
     version: "0.0.5"
