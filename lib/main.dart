@@ -18,8 +18,8 @@ void main() async {
   await Future.wait([
     ForegroundService.registerHeadlessEntry(),
     DB.initialize(),
-    getPrinters(),
   ]);
+  getPrinters();
 
   runApp(
     const PrntApp(),
