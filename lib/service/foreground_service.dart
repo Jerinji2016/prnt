@@ -177,7 +177,7 @@ Future<void> dispatchPrint(PrintMessageData printMessageData) async {
   generator.reset();
   List<int> printBytes = generator.imageRaster(image);
   printBytes += generator.feed(2);
-  printBytes += generator.cut();
+  printBytes += generator.cut(mode: PosCutMode.partial);
 
   await connectionType.getAdapter().dispatchPrint(manager, printBytes);
   debugPrint("dispatchPrint: ✅ Print Dispatched successfully");
