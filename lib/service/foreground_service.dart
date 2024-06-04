@@ -92,7 +92,7 @@ Future<void> runServerOnMainIsolate() => _registerWithRedisServer();
 Future<void> stopServerOnMainIsolate() async {
   DataProvider dataProvider = DataProvider();
   String revenueCenterId = dataProvider.profile.revenueCenterId;
-  String topic = "prod_dineazy_$revenueCenterId";
+  String topic = "prod_dineazy_${revenueCenterId}_kot";
 
   final cmd = await RedisConnection().connect(
     RedisConfig.host,
@@ -108,7 +108,7 @@ Future<void> stopServerOnMainIsolate() async {
 Future<void> _registerWithRedisServer() async {
   DataProvider dataProvider = DataProvider();
   String revenueCenterId = dataProvider.profile.revenueCenterId;
-  String topic = "prod_dineazy_$revenueCenterId";
+  String topic = "prod_dineazy_${revenueCenterId}_kot";
 
   final cmd = await RedisConnection().connect(
     RedisConfig.host,
