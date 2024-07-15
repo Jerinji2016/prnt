@@ -10,7 +10,7 @@ import '../modals/user_profile.dart';
 import '../providers/data_provider.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/primary_text_button.dart';
-import 'home.dart';
+import 'home/home.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

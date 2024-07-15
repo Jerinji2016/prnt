@@ -3,13 +3,13 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
-import '../db/message.table.dart';
-import '../helpers/types.dart';
-import '../helpers/utils.dart';
-import '../modals/message_data.dart';
-import '../modals/print_data.dart';
-import '../service/foreground_service.dart';
-import '../widgets/primary_button.dart';
+import '../../db/message.table.dart';
+import '../../helpers/types.dart';
+import '../../helpers/utils.dart';
+import '../../modals/message_data.dart';
+import '../../modals/print_data.dart';
+import '../../service/foreground_service.dart';
+import '../../widgets/primary_button.dart';
 
 class MessagesScreen extends StatefulWidget {
   const MessagesScreen({super.key});
