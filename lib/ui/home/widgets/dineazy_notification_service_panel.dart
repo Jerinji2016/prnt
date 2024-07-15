@@ -95,6 +95,8 @@ class _DineazyNotificationServicePanelState extends State<DineazyNotificationSer
 
   @override
   Widget build(BuildContext context) {
+    bool isServiceStopped = status == ForegroundServiceStatus.stopped;
+
     return Material(
       shape: RoundedRectangleBorder(
         borderRadius: const BorderRadius.all(Radius.circular(8.0)),
@@ -186,7 +188,9 @@ class _DineazyNotificationServicePanelState extends State<DineazyNotificationSer
                       )
                     : PrimaryButton(
                         onTap: _onTap,
-                        text: status == ForegroundServiceStatus.stopped ? "Start" : "Stop",
+                        color: isServiceStopped ? null : Colors.red.shade900,
+                        textColor: isServiceStopped ? null : Colors.white,
+                        text: isServiceStopped ? "Start" : "Stop",
                       ),
               ),
             ),
