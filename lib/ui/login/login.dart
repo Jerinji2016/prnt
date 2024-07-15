@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../widgets/primary_button.dart';
+import '../home/pages/dineazy_config.dart';
 import 'login.interface.dart';
 
 class LoginWidget extends StatefulWidget {
@@ -28,13 +29,14 @@ class _LoginWidgetState extends State<LoginWidget> {
   void initState() {
     super.initState();
 
-    widget.impl.loadingMessage.addListener(() {
-      debugPrint("_LoginWidgetState.initState: 🐞jerin: ${widget.impl.loadingMessage.value}");
-    });
-
     if (kDebugMode) {
-      _usernameController.text = "mmukesh1917@gmail.com";
-      _passwordController.text = "Mukesh@123";
+      if (widget.impl is DineazyConfigPage) {
+        _usernameController.text = "mmukesh1917@gmail.com";
+        _passwordController.text = "Mukesh@123";
+      } else {
+        _usernameController.text = "admin@elaachi.com";
+        _passwordController.text = "El@ach1369";
+      }
     }
   }
 
