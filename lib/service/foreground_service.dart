@@ -59,11 +59,11 @@ class ForegroundService {
     if (Platform.isAndroid) {
       int? callbackMethodId = PluginUtilities.getCallbackHandle(headlessEntry)?.toRawHandle();
       if (callbackMethodId == null) {
-        debugPrint("BackgroundSyncManager._registerHeadlessTask: Failed to get callback ID");
+        debugPrint("ForegroundService._registerHeadlessTask: Failed to get callback ID");
         return;
       }
       bool response = await registerServiceCallbackId(callbackMethodId);
-      debugPrint("Headless.registerHeadlessEntry: Register Callback: ${response ? "✅" : "❌"}");
+      debugPrint("ForegroundService.registerHeadlessEntry: Register Callback: ${response ? "✅" : "❌"}");
     } else if (Platform.isIOS) {
       debugPrint("⚠️ WARNING: background sync not implemented for iOS!");
       debugPrint("⚠️ WARNING: offline sync not implemented for iOS!");
@@ -79,7 +79,6 @@ void headlessEntry() async {
   WidgetsFlutterBinding.ensureInitialized();
   DartPluginRegistrant.ensureInitialized();
   SharedPreferencesAndroid.registerWith();
-  // WebcontentConverter.ensureInitialized();
   debugPrint("headlessEntry: ensure initialised");
 
   await DB.initialize();
@@ -91,7 +90,7 @@ Future<void> runServerOnMainIsolate() => _registerWithRedisServer();
 
 Future<void> stopServerOnMainIsolate() async {
   DataProvider dataProvider = DataProvider();
-  String revenueCenterId = dataProvider.profile.revenueCenterId;
+  String revenueCenterId = dataProvider.dineazyProfile.revenueCenterId;
   String topic = "prod_dineazy_${revenueCenterId}_kot";
 
   final cmd = await RedisConnection().connect(
@@ -107,7 +106,7 @@ Future<void> stopServerOnMainIsolate() async {
 
 Future<void> _registerWithRedisServer() async {
   DataProvider dataProvider = DataProvider();
-  String revenueCenterId = dataProvider.profile.revenueCenterId;
+  String revenueCenterId = dataProvider.dineazyProfile.revenueCenterId;
   String topic = "prod_dineazy_${revenueCenterId}_kot";
 
   final cmd = await RedisConnection().connect(
