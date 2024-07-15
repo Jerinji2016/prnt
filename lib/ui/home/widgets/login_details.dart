@@ -36,6 +36,7 @@ class LoginDetails extends StatelessWidget {
               fontSize: 16.0,
             ),
           ),
+        const SizedBox(height: 16.0),
         SizedBox(
           width: MediaQuery.of(context).size.shortestSide * 0.5,
           child: PrimaryButton(
