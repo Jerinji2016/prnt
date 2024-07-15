@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:http/http.dart';
 
-import '../modals/user_profile.dart';
+import '../modals/base_modal.dart';
 
-abstract class ApiService {
+abstract class ApiService<T extends BaseModal> {
   final Client client = Client();
 
   String get baseUrl;
@@ -16,5 +16,5 @@ abstract class ApiService {
 
   Future<String> login(String username, String password);
 
-  Future<DineazyProfile> getProfile(String token);
+  Future<T> getProfile(String token);
 }

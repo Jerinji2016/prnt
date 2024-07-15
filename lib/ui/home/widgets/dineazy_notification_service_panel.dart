@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../helpers/utils.dart';
+import '../../../providers/data_provider.dart';
 import '../../../service/foreground_service.dart';
 import '../../../widgets/primary_button.dart';
 
-class PrinterServiceStatusPanel extends StatefulWidget {
-  const PrinterServiceStatusPanel({super.key});
+class DineazyNotificationServicePanel extends StatefulWidget {
+  const DineazyNotificationServicePanel({super.key});
 
   @override
-  State<PrinterServiceStatusPanel> createState() => _PrinterServiceStatusPanelState();
+  State<DineazyNotificationServicePanel> createState() => _DineazyNotificationServicePanelState();
 }
 
-class _PrinterServiceStatusPanelState extends State<PrinterServiceStatusPanel> {
+class _DineazyNotificationServicePanelState extends State<DineazyNotificationServicePanel> {
   ForegroundServiceStatus status = ForegroundServiceStatus.stopped;
 
   bool _runOnUiIsolate = true;
@@ -30,18 +32,22 @@ class _PrinterServiceStatusPanelState extends State<PrinterServiceStatusPanel> {
   }
 
   void _runOnUIIsolate() async {
+    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
+    String topic = dataProvider.dineazyProfile.redisTopic;
+
     bool isServiceRunning = status == ForegroundServiceStatus.running;
 
     setState(() => status = ForegroundServiceStatus.loading);
     ForegroundServiceStatus nextStatus;
     if (!isServiceRunning) {
-      runServerOnMainIsolate();
+      runServerOnMainIsolate(topic);
+
       nextStatus = ForegroundServiceStatus.running;
       if (mounted) {
         showToast(context, "Subscribed successfully", color: Colors.green);
       }
     } else {
-      await stopServerOnMainIsolate();
+      await stopServerOnMainIsolate(topic);
       nextStatus = ForegroundServiceStatus.stopped;
       if (mounted) {
         showToast(context, "Unsubscribed successfully");
@@ -73,6 +79,10 @@ class _PrinterServiceStatusPanelState extends State<PrinterServiceStatusPanel> {
   }
 
   void _onSwitchTapped(bool value) {
+    showToast(context, "Background Service is unavailable");
+    return;
+
+    //  ignore: dead_code
     if (status == ForegroundServiceStatus.running) {
       showToast(context, "Stop service to toggle");
       return;

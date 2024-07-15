@@ -106,6 +106,7 @@ class _PropertyConfigDelegateState extends State<PropertyConfigDelegate> with Ti
         Expanded(
           child: TabBarView(
             controller: tabController,
+            viewportFraction: 0.99,
             children: [
               DineazyConfigPage(),
               EazyPMSConfigPage(),

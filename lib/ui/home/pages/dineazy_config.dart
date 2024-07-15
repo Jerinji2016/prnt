@@ -3,13 +3,12 @@ import 'package:provider/provider.dart';
 
 import '../../../apis/dineazy.impl.dart';
 import '../../../helpers/utils.dart';
-import '../../../modals/restaurant.dart';
-import '../../../modals/user_profile.dart';
+import '../../../modals/profile/dineazy.profile.dart';
 import '../../../providers/data_provider.dart';
 import '../../login/login.dart';
 import '../../login/login.interface.dart';
+import '../widgets/dineazy_notification_service_panel.dart';
 import '../widgets/login_details.dart';
-import '../widgets/printer_service_status_panel.dart';
 
 class DineazyConfigPage extends StatelessWidget implements LoginInterface, LogoutInterface {
   DineazyConfigPage({super.key});
@@ -23,25 +22,26 @@ class DineazyConfigPage extends StatelessWidget implements LoginInterface, Logou
   Future<void> onLogin(BuildContext context, String username, password) async {
     loadingMessage.value = "Authenticating...";
 
+    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
     try {
       DineazyApiService dineazyApiService = DineazyApiService();
       String token = await dineazyApiService.login(username, password);
 
       loadingMessage.value = "Fetching Profile...";
       DineazyProfile profile = await dineazyApiService.getProfile(token);
-      loadingMessage.value = "Fetching Restaurant...";
-      Restaurant restaurant = await dineazyApiService.getRestaurant(
-        token,
-        profile.companyId,
-        profile.revenueCenterId,
-      );
+      // loadingMessage.value = "Fetching Restaurant...";
+      // Restaurant restaurant = await dineazyApiService.getRestaurant(
+      //   token,
+      //   profile.companyId,
+      //   profile.revenueCenterId,
+      // );
 
       if (context.mounted) {
         showToast(context, "✅ Authentication Successful", color: Colors.green);
-        Provider.of<DataProvider>(context, listen: false).saveDineazyData(profile, restaurant);
+        dataProvider.saveDineazyData(profile);
       }
     } catch (e) {
-      debugPrint("_LoginState._onLoginTapped: ❌ERROR: $e");
+      debugPrint("DineazyConfigPage._onLoginTapped: ❌ERROR: $e");
       if (context.mounted) {
         showToast(context, "❌ ${e.toString()}", color: Theme.of(context).colorScheme.error);
       }
@@ -59,11 +59,14 @@ class DineazyConfigPage extends StatelessWidget implements LoginInterface, Logou
   @override
   Widget build(BuildContext context) {
     DataProvider dataProvider = Provider.of<DataProvider>(context);
+    debugPrint("DineazyConfigPage.build: 🐞");
 
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Builder(
         builder: (context) {
+          debugPrint("DineazyConfigPage.build: 🐞");
+
           if (!dataProvider.hasDineazyProfile) {
             return LoginWidget(
               title: "Login to Dineazy",
@@ -71,14 +74,14 @@ class DineazyConfigPage extends StatelessWidget implements LoginInterface, Logou
             );
           }
 
-          Restaurant? restaurant = dataProvider.restaurant;
+          DineazyRevenueCenter restaurant = dataProvider.dineazyProfile.revenueCenter;
           return Column(
             children: [
-              const PrinterServiceStatusPanel(),
+              const DineazyNotificationServicePanel(),
               const SizedBox(height: 24.0),
               LoginDetails(
-                name: restaurant?.name ?? "Undefined",
-                description: restaurant?.description,
+                name: restaurant.name,
+                description: restaurant.description,
                 impl: this,
               ),
             ],

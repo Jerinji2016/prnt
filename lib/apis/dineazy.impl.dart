@@ -4,11 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
-import '../modals/restaurant.dart';
-import '../modals/user_profile.dart';
+import '../modals/profile/dineazy.profile.dart';
 import 'api_service.dart';
 
-class DineazyApiService extends ApiService {
+class DineazyApiService extends ApiService<DineazyProfile> {
   @override
   String get baseUrl => "https://dineazy-api.elaachi.com/api/v2";
 
@@ -55,24 +54,5 @@ class DineazyApiService extends ApiService {
     }
     debugPrint("DineazyApiService.getProfile: ✅ Profile fetched successfully");
     return DineazyProfile(json["data"]);
-  }
-
-  Future<Restaurant> getRestaurant(String token, String companyId, String revenueCenterId) async {
-    Uri uri = Uri.parse("$baseUrl/companies/$companyId");
-    Response response = await client.get(uri);
-
-    Map<String, dynamic> json = jsonDecode(response.body);
-    if (json["code"] != 200) {
-      throw "Failed to fetch Restaurant details";
-    }
-
-    Map<String, dynamic> restaurantJson = (json["data"] as Map<String, dynamic>)
-      ..addAll({
-        "revenueCenterId": revenueCenterId,
-      });
-
-    Restaurant restaurant = Restaurant(restaurantJson);
-    debugPrint("DineazyApiService.getRestaurantDetails: ✅ Fetched Restaurant Details: $restaurant");
-    return restaurant;
   }
 }

@@ -21,7 +21,6 @@ import '../helpers/globals.dart';
 import '../helpers/utils.dart';
 import '../modals/message_data.dart';
 import '../modals/print_data.dart';
-import '../providers/data_provider.dart';
 
 enum ForegroundServiceStatus {
   stopped(
@@ -83,16 +82,16 @@ void headlessEntry() async {
 
   await DB.initialize();
   sharedPreferences = await SharedPreferences.getInstance();
-  await _registerWithRedisServer();
+
+  // DataProvider dataProvider = DataProvider();
+  // String revenueCenterId = dataProvider.dineazyProfile.revenueCenterId;
+  // String topic = "prod_dineazy_${revenueCenterId}_kot";
+  // await _registerWithRedisServer(topic);
 }
 
-Future<void> runServerOnMainIsolate() => _registerWithRedisServer();
+Future<void> runServerOnMainIsolate(String topic) => _registerWithRedisServer(topic);
 
-Future<void> stopServerOnMainIsolate() async {
-  DataProvider dataProvider = DataProvider();
-  String revenueCenterId = dataProvider.dineazyProfile.revenueCenterId;
-  String topic = "prod_dineazy_${revenueCenterId}_kot";
-
+Future<void> stopServerOnMainIsolate(String topic) async {
   final cmd = await RedisConnection().connect(
     RedisConfig.host,
     RedisConfig.port,
@@ -104,11 +103,7 @@ Future<void> stopServerOnMainIsolate() async {
   debugPrint("stopServerOnMainIsolate: ✅ Unsubscribed successfully");
 }
 
-Future<void> _registerWithRedisServer() async {
-  DataProvider dataProvider = DataProvider();
-  String revenueCenterId = dataProvider.dineazyProfile.revenueCenterId;
-  String topic = "prod_dineazy_${revenueCenterId}_kot";
-
+Future<void> _registerWithRedisServer(String topic) async {
   final cmd = await RedisConnection().connect(
     RedisConfig.host,
     RedisConfig.port,
