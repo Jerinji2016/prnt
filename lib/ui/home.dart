@@ -12,7 +12,7 @@ import 'messages.dart';
 import 'setup_printers/setup_printers.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +94,7 @@ class HomeScreen extends StatelessWidget {
 }
 
 class PrinterServiceStatusPanel extends StatefulWidget {
-  const PrinterServiceStatusPanel({Key? key}) : super(key: key);
+  const PrinterServiceStatusPanel({super.key});
 
   @override
   State<PrinterServiceStatusPanel> createState() => _PrinterServiceStatusPanelState();
@@ -206,7 +206,7 @@ class _PrinterServiceStatusPanelState extends State<PrinterServiceStatusPanel> {
                         status.icon,
                         color: status.iconColor,
                         size: 20.0,
-                      )
+                      ),
                     ],
                   ),
                   Row(
@@ -277,7 +277,7 @@ class _PrinterServiceStatusPanelState extends State<PrinterServiceStatusPanel> {
 }
 
 class LoginDetails extends StatelessWidget {
-  const LoginDetails({Key? key}) : super(key: key);
+  const LoginDetails({super.key});
 
   void _onLogoutTapped(BuildContext context) async {
     DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
@@ -328,12 +328,11 @@ class _SettingsOptions extends StatelessWidget {
   final VoidCallback onTap;
 
   const _SettingsOptions({
-    Key? key,
     required this.title,
     required this.description,
     required this.buttonText,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -367,7 +366,7 @@ class _SettingsOptions extends StatelessWidget {
                       fontSize: 12.0,
                       color: Theme.of(context).disabledColor,
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

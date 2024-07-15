@@ -27,7 +27,7 @@ void main() async {
 }
 
 class PrntApp extends StatelessWidget {
-  const PrntApp({Key? key}) : super(key: key);
+  const PrntApp({super.key});
 
   @override
   Widget build(BuildContext context) {
