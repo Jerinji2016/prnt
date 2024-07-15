@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../../../widgets/primary_button.dart';
@@ -10,6 +9,7 @@ class SettingsOptions extends StatelessWidget {
   final VoidCallback onTap;
 
   const SettingsOptions({
+    super.key,
     required this.title,
     required this.description,
     required this.buttonText,
@@ -19,7 +19,7 @@ class SettingsOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: 10.0,
+      elevation: 6.0,
       shape: RoundedRectangleBorder(
         borderRadius: const BorderRadius.all(Radius.circular(8.0)),
         side: BorderSide(

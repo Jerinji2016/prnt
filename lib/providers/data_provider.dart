@@ -7,13 +7,16 @@ import '../modals/restaurant.dart';
 import '../modals/user_profile.dart';
 
 class DataProvider extends ChangeNotifier {
-  static const _profileKey = "user-profile";
+  static const _dineazyProfileKey = "dineazy-user-profile";
   static const _restaurantKey = "restaurant";
 
+  static const _eazypmsProfileKey = "eazypms-user-profile";
+  static const _propertyKey = "property";
+
   DataProvider() {
-    String? profileJson = sharedPreferences.getString(_profileKey);
+    String? profileJson = sharedPreferences.getString(_dineazyProfileKey);
     if (profileJson != null) {
-      _profile = UserProfile(jsonDecode(profileJson));
+      _dineazyProfile = DineazyProfile(jsonDecode(profileJson));
     }
 
     String? restaurantJson = sharedPreferences.getString(_restaurantKey);
@@ -22,35 +25,37 @@ class DataProvider extends ChangeNotifier {
     }
   }
 
-  UserProfile? _profile;
+  DineazyProfile? _dineazyProfile;
 
   Restaurant? _restaurant;
 
-  bool get hasProfile => _profile != null;
+  bool get hasDineazyProfile => _dineazyProfile != null;
 
-  void save(UserProfile profile, Restaurant restaurant) {
-    _profile = profile;
+  void saveDineazyData(DineazyProfile profile, Restaurant restaurant) {
+    _dineazyProfile = profile;
     _restaurant = restaurant;
 
     sharedPreferences.setString(
-      _profileKey,
+      _dineazyProfileKey,
       jsonEncode(profile.json),
     );
     sharedPreferences.setString(
       _restaurantKey,
       jsonEncode(restaurant.json),
     );
+
+    notifyListeners();
   }
 
-  bool hasSubscribed = false;
-
-  UserProfile get profile => _profile!;
+  DineazyProfile get dineazyProfile => _dineazyProfile!;
 
   Restaurant? get restaurant => _restaurant;
 
-  void logout() {
-    debugPrint("DataProvider.logout: ");
-    sharedPreferences.remove(_profileKey);
+  void logoutOfDineazy() {
+    sharedPreferences.remove(_dineazyProfileKey);
     sharedPreferences.remove(_restaurantKey);
+    _dineazyProfile = null;
+    _restaurant = null;
+    notifyListeners();
   }
 }

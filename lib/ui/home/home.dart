@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../modals/restaurant.dart';
-import '../../providers/data_provider.dart';
 import '../../providers/theme_provider.dart';
-import '../../widgets/primary_button.dart';
-import '../login.dart';
-import '../messages/messages.dart';
-import '../setup_printers/setup_printers.dart';
+import 'home.vm.dart';
+import 'pages/dineazy_config.dart';
+import 'pages/eazypms_config.dart';
 import 'widgets/settings_options.dart';
-import 'widgets/login_details.dart';
-import 'widgets/printer_service_status_panel.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -19,68 +14,105 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 1.0,
-        title: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
-          child: Text(
-            "PrintBot",
-            style: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
+    return ChangeNotifierProvider(
+      create: (context) => HomeViewModal(),
+      builder: (context, child) {
+        HomeViewModal viewModal = Provider.of<HomeViewModal>(context, listen: false);
+
+        return Scaffold(
+          appBar: AppBar(
+            elevation: 4.0,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            title: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                "PrintBot",
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
+            actions: [
+              IconButton(
+                onPressed: () => viewModal.onMessagesIconTapped(context),
+                icon: const Icon(Icons.description_outlined),
+                tooltip: "Message Logs",
+              ),
+              IconButton(
+                onPressed: themeProvider.toggleTheme,
+                icon: Icon(themeProvider.icon),
+                tooltip: "Change Theme",
+              ),
+              const SizedBox(width: 16.0),
+            ],
           ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const MessagesScreen()),
-            ),
-            icon: const Icon(Icons.description_outlined),
-            tooltip: "Message Logs",
-          ),
-          IconButton(
-            onPressed: themeProvider.toggleTheme,
-            icon: Icon(themeProvider.icon),
-            tooltip: "Change Theme",
-          ),
-          const SizedBox(width: 16.0),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          body: Column(
             children: [
-              const PrinterServiceStatusPanel(),
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 20.0),
-                height: 2.0,
-                color: Theme.of(context).highlightColor,
-              ),
-              SettingsOptions(
-                title: "Manage Printers",
-                description: "Setup your printer devices",
-                buttonText: "Setup",
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SetupPrintersScreen()),
+              const SizedBox(height: 8.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                child: SettingsOptions(
+                  title: "Manage Printers",
+                  description: "Setup your printer devices",
+                  buttonText: "Setup",
+                  onTap: () => viewModal.onSetupPrinterTapped(context),
                 ),
               ),
-              const SizedBox(height: 20.0),
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 32.0),
-                  child: LoginDetails(),
-                ),
+              const Expanded(
+                child: PropertyConfigDelegate(),
               ),
             ],
           ),
+        );
+      },
+    );
+  }
+}
+
+class PropertyConfigDelegate extends StatefulWidget {
+  const PropertyConfigDelegate({super.key});
+
+  @override
+  State<PropertyConfigDelegate> createState() => _PropertyConfigDelegateState();
+}
+
+class _PropertyConfigDelegateState extends State<PropertyConfigDelegate> with TickerProviderStateMixin {
+  late final TabController tabController = TabController(length: 2, vsync: this);
+
+  @override
+  void dispose() {
+    super.dispose();
+    tabController.dispose();
+  }
+
+  Tab _buildTabHeaders(String text) {
+    return Tab(
+      child: Text(text),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TabBar(
+          controller: tabController,
+          tabs: [
+            _buildTabHeaders("Dineazy"),
+            _buildTabHeaders("eazyPMS"),
+          ],
         ),
-      ),
+        Expanded(
+          child: TabBarView(
+            controller: tabController,
+            children: [
+              DineazyConfigPage(),
+              EazyPMSConfigPage(),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

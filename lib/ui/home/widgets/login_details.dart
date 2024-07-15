@@ -4,18 +4,13 @@ import 'package:provider/provider.dart';
 import '../../../modals/restaurant.dart';
 import '../../../providers/data_provider.dart';
 import '../../../widgets/primary_button.dart';
-import '../../login.dart';
 
 class LoginDetails extends StatelessWidget {
   const LoginDetails({super.key});
 
   void _onLogoutTapped(BuildContext context) async {
     DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
-    dataProvider.logout();
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-      (route) => false,
-    );
+    dataProvider.logoutOfDineazy();
   }
 
   @override

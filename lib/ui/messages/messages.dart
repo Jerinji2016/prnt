@@ -237,8 +237,7 @@ class _ViewReceiptDelegateState extends State<ViewReceiptDelegate> {
         _imageBytes,
         width: MediaQuery.of(context).size.shortestSide,
         fit: BoxFit.contain,
-        alignment: Alignment.topCenter,
-        scale: 4.0,
+        alignment: Alignment.center,
       ),
     );
   }

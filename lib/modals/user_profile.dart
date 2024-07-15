@@ -1,7 +1,7 @@
-class UserProfile {
+class DineazyProfile {
   final Map<String, dynamic> json;
 
-  UserProfile(this.json);
+  DineazyProfile(this.json);
 
   List get _permissions => json["permissions"];
 
