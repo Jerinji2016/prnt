@@ -6,7 +6,7 @@ import 'package:http/http.dart';
 
 import '../modals/restaurant.dart';
 import '../modals/user_profile.dart';
-import 'api_manager.dart';
+import 'api_service.dart';
 
 class DineazyApiService extends ApiService {
   @override
@@ -39,7 +39,7 @@ class DineazyApiService extends ApiService {
       throw "Failed to fetch token";
     }
 
-    debugPrint("DineazyApiService.login: ✅ Login Successful");
+    debugPrint("DineazyApiService.login: ✅ Dineazy Login Successful");
     return token;
   }
 
