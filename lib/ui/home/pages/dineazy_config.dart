@@ -11,7 +11,7 @@ import '../../login/login.interface.dart';
 import '../widgets/login_details.dart';
 import '../widgets/printer_service_status_panel.dart';
 
-class DineazyConfigPage extends StatelessWidget implements LoginInterface {
+class DineazyConfigPage extends StatelessWidget implements LoginInterface, LogoutInterface {
   DineazyConfigPage({super.key});
 
   final ValueNotifier<String?> _loadingMessage = ValueNotifier(null);
@@ -51,23 +51,40 @@ class DineazyConfigPage extends StatelessWidget implements LoginInterface {
   }
 
   @override
+  void onLogoutTapped(BuildContext context) {
+    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
+    dataProvider.logoutOfDineazy();
+  }
+
+  @override
   Widget build(BuildContext context) {
     DataProvider dataProvider = Provider.of<DataProvider>(context);
 
     return Padding(
       padding: const EdgeInsets.all(24.0),
-      child: !dataProvider.hasDineazyProfile
-          ? LoginWidget(
+      child: Builder(
+        builder: (context) {
+          if (!dataProvider.hasDineazyProfile) {
+            return LoginWidget(
               title: "Login to Dineazy",
               impl: this,
-            )
-          : const Column(
-              children: [
-                PrinterServiceStatusPanel(),
-                SizedBox(height: 24.0),
-                LoginDetails(),
-              ],
-            ),
+            );
+          }
+
+          Restaurant? restaurant = dataProvider.restaurant;
+          return Column(
+            children: [
+              const PrinterServiceStatusPanel(),
+              const SizedBox(height: 24.0),
+              LoginDetails(
+                name: restaurant?.name ?? "Undefined",
+                description: restaurant?.description,
+                impl: this,
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

@@ -1,35 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../../../modals/restaurant.dart';
-import '../../../providers/data_provider.dart';
 import '../../../widgets/primary_button.dart';
 
-class LoginDetails extends StatelessWidget {
-  const LoginDetails({super.key});
+abstract class LogoutInterface {
+  void onLogoutTapped(BuildContext context);
+}
 
-  void _onLogoutTapped(BuildContext context) async {
-    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
-    dataProvider.logoutOfDineazy();
-  }
+class LoginDetails extends StatelessWidget {
+  final String name;
+  final String? description;
+  final LogoutInterface impl;
+
+  const LoginDetails({
+    super.key,
+    required this.name,
+    required this.description,
+    required this.impl,
+  });
 
   @override
   Widget build(BuildContext context) {
-    DataProvider dataProvider = Provider.of<DataProvider>(context);
-    Restaurant? restaurant = dataProvider.restaurant;
-
     return Column(
       children: [
         Text(
-          restaurant?.name ?? "Unknown Restaurant",
+          name,
           style: const TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.bold,
           ),
         ),
-        if (restaurant != null && restaurant.description.isNotEmpty)
+        if (description?.isNotEmpty ?? false)
           Text(
-            restaurant.description,
+            description!,
             style: const TextStyle(
               fontSize: 16.0,
             ),
@@ -38,7 +40,7 @@ class LoginDetails extends StatelessWidget {
           width: MediaQuery.of(context).size.shortestSide * 0.5,
           child: PrimaryButton(
             text: "Logout",
-            onTap: () => _onLogoutTapped(context),
+            onTap: () => impl.onLogoutTapped(context),
           ),
         ),
       ],
