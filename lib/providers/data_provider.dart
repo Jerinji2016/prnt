@@ -11,9 +11,14 @@ class DataProvider extends ChangeNotifier {
   static const _eazypmsProfileKey = "eazypms-user-profile";
 
   DataProvider() {
-    String? profileJson = sharedPreferences.getString(_dineazyProfileKey);
-    if (profileJson != null) {
-      _dineazyProfile = DineazyProfile(jsonDecode(profileJson));
+    String? dineazyProfileJson = sharedPreferences.getString(_dineazyProfileKey);
+    if (dineazyProfileJson != null) {
+      _dineazyProfile = DineazyProfile(jsonDecode(dineazyProfileJson));
+    }
+
+    String? eazypmsProfileJson = sharedPreferences.getString(_eazypmsProfileKey);
+    if (eazypmsProfileJson != null) {
+      _eazypmsProfile = EazypmsProfile(jsonDecode(eazypmsProfileJson));
     }
   }
 
