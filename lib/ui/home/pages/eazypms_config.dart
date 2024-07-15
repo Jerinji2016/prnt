@@ -7,6 +7,7 @@ import '../../../modals/profile/eazypms.profile.dart';
 import '../../../providers/data_provider.dart';
 import '../../login/login.dart';
 import '../../login/login.interface.dart';
+import '../widgets/eazypms_notification_service_panel.dart';
 import '../widgets/login_details.dart';
 
 class EazyPMSConfigPage extends StatelessWidget implements LoginInterface, LogoutInterface {
@@ -53,30 +54,34 @@ class EazyPMSConfigPage extends StatelessWidget implements LoginInterface, Logou
   Widget build(BuildContext context) {
     DataProvider dataProvider = Provider.of<DataProvider>(context);
 
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Builder(
-        builder: (context) {
-          if (!dataProvider.hasEazypmsProfile) {
-            return LoginWidget(
+    return Builder(
+      builder: (context) {
+        if (!dataProvider.hasEazypmsProfile) {
+          return Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: LoginWidget(
               title: "Login to eazyPMS",
               impl: this,
-            );
-          }
+            ),
+          );
+        }
 
-          EazypmsProfile eazypmsProfile = dataProvider.eazypmsProfile;
-          return Column(
+        EazypmsProfile eazypmsProfile = dataProvider.eazypmsProfile;
+        return SingleChildScrollView(
+          child: Column(
             children: [
-              const SizedBox(height: 24.0),
+              const EazypmsNotificationServicePanel(),
+              const SizedBox(height: 12.0),
               LoginDetails(
-                name: "Undefined",
-                description: "Undefined",
+                name: eazypmsProfile.company.name,
+                description: eazypmsProfile.company.description,
                 impl: this,
               ),
+              const SizedBox(height: 32.0),
             ],
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
