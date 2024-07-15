@@ -38,7 +38,7 @@ void showToast(BuildContext context, String message, {Color? color}) => Scaffold
             ),
           ),
         ),
-        backgroundColor: color ?? Theme.of(context).colorScheme.errorContainer,
+        backgroundColor: color ?? Theme.of(context).colorScheme.primary,
         behavior: SnackBarBehavior.floating,
       ),
     );
