@@ -111,7 +111,7 @@ object Utils {
                 super.onPageFinished(view, url)
 
                 // delay 300 ms for every `height` 2000
-                val duration = (height / 1000) * 200
+                val duration = (height / 2000) * 300
 
                 Handler(Looper.getMainLooper()).postDelayed({
                     webView.evaluateJavascript("(function() { return [document.body.offsetWidth, document.body.offsetHeight]; })();") {
