@@ -114,7 +114,14 @@ object Utils {
                 val duration = (height / 2000) * 300
 
                 Handler(Looper.getMainLooper()).postDelayed({
-                    webView.evaluateJavascript("(function() { return [document.body.offsetWidth, document.body.offsetHeight]; })();") {
+                    webView.evaluateJavascript("(function () {\n" +
+                            "        let billHeight = 0;\n" +
+                            "        const children = document.body.children;\n" +
+                            "        for (let i = 0; i < children.length; i++) {\n" +
+                            "            billHeight += children[i].clientHeight;\n" +
+                            "        }\n" +
+                            "        return [document.body.offsetWidth, billHeight];\n" +
+                            "    })()") {
                         val xy = JSONArray(it)
 
                         Log.d(TAG, "onPageFinished: $xy")
