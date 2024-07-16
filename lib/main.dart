@@ -8,8 +8,7 @@ import 'helpers/utils.dart';
 import 'providers/data_provider.dart';
 import 'providers/theme_provider.dart';
 import 'service/foreground_service.dart';
-import 'ui/home.dart';
-import 'ui/login.dart';
+import 'ui/home/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +26,7 @@ void main() async {
 }
 
 class PrntApp extends StatelessWidget {
-  const PrntApp({Key? key}) : super(key: key);
+  const PrntApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +41,6 @@ class PrntApp extends StatelessWidget {
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
-          DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
-          Widget home = dataProvider.hasProfile ? const HomeScreen() : const LoginScreen();
-
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             themeMode: themeProvider.mode,
@@ -55,7 +51,7 @@ class PrntApp extends StatelessWidget {
               ),
             ),
             darkTheme: ThemeData.dark(useMaterial3: true),
-            home: home,
+            home: const HomeScreen(),
           );
         },
       ),

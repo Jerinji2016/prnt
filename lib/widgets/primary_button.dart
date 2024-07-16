@@ -4,26 +4,31 @@ class PrimaryButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
   final EdgeInsetsGeometry padding;
+  final Color? color, textColor;
 
   const PrimaryButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onTap,
+    this.color,
+    this.textColor,
     this.padding = EdgeInsets.zero,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
       onPressed: onTap,
-      color: Theme.of(context).colorScheme.primaryContainer,
+      color: color ?? Theme.of(context).colorScheme.primaryContainer,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(8.0)),
       ),
-      child: Container(
+      child: Padding(
         padding: padding,
-        // alignment: Alignment.center,
-        child: Text(text),
+        child: Text(
+          text,
+          style: TextStyle(color: textColor),
+        ),
       ),
     );
   }

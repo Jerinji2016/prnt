@@ -21,7 +21,6 @@ import '../helpers/globals.dart';
 import '../helpers/utils.dart';
 import '../modals/message_data.dart';
 import '../modals/print_data.dart';
-import '../providers/data_provider.dart';
 
 enum ForegroundServiceStatus {
   stopped(
@@ -59,11 +58,11 @@ class ForegroundService {
     if (Platform.isAndroid) {
       int? callbackMethodId = PluginUtilities.getCallbackHandle(headlessEntry)?.toRawHandle();
       if (callbackMethodId == null) {
-        debugPrint("BackgroundSyncManager._registerHeadlessTask: Failed to get callback ID");
+        debugPrint("ForegroundService._registerHeadlessTask: Failed to get callback ID");
         return;
       }
       bool response = await registerServiceCallbackId(callbackMethodId);
-      debugPrint("Headless.registerHeadlessEntry: Register Callback: ${response ? "✅" : "❌"}");
+      debugPrint("ForegroundService.registerHeadlessEntry: Register Callback: ${response ? "✅" : "❌"}");
     } else if (Platform.isIOS) {
       debugPrint("⚠️ WARNING: background sync not implemented for iOS!");
       debugPrint("⚠️ WARNING: offline sync not implemented for iOS!");
@@ -79,21 +78,20 @@ void headlessEntry() async {
   WidgetsFlutterBinding.ensureInitialized();
   DartPluginRegistrant.ensureInitialized();
   SharedPreferencesAndroid.registerWith();
-  // WebcontentConverter.ensureInitialized();
   debugPrint("headlessEntry: ensure initialised");
 
   await DB.initialize();
   sharedPreferences = await SharedPreferences.getInstance();
-  await _registerWithRedisServer();
+
+  // DataProvider dataProvider = DataProvider();
+  // String revenueCenterId = dataProvider.dineazyProfile.revenueCenterId;
+  // String topic = "prod_dineazy_${revenueCenterId}_kot";
+  // await _registerWithRedisServer(topic);
 }
 
-Future<void> runServerOnMainIsolate() => _registerWithRedisServer();
+Future<void> runServerOnMainIsolate(String topic) => _registerWithRedisServer(topic);
 
-Future<void> stopServerOnMainIsolate() async {
-  DataProvider dataProvider = DataProvider();
-  String revenueCenterId = dataProvider.profile.revenueCenterId;
-  String topic = "prod_dineazy_${revenueCenterId}_kot";
-
+Future<void> stopServerOnMainIsolate(String topic) async {
   final cmd = await RedisConnection().connect(
     RedisConfig.host,
     RedisConfig.port,
@@ -105,11 +103,7 @@ Future<void> stopServerOnMainIsolate() async {
   debugPrint("stopServerOnMainIsolate: ✅ Unsubscribed successfully");
 }
 
-Future<void> _registerWithRedisServer() async {
-  DataProvider dataProvider = DataProvider();
-  String revenueCenterId = dataProvider.profile.revenueCenterId;
-  String topic = "prod_dineazy_${revenueCenterId}_kot";
-
+Future<void> _registerWithRedisServer(String topic) async {
   final cmd = await RedisConnection().connect(
     RedisConfig.host,
     RedisConfig.port,

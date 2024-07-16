@@ -8,7 +8,7 @@ import '../../widgets/primary_button.dart';
 import 'setup_printers.vm.dart';
 
 class SetupPrintersScreen extends StatefulWidget {
-  const SetupPrintersScreen({Key? key}) : super(key: key);
+  const SetupPrintersScreen({super.key});
 
   @override
   State<SetupPrintersScreen> createState() => _SetupPrintersScreenState();
@@ -132,7 +132,9 @@ class _SetupPrintersScreenState extends State<SetupPrintersScreen> {
                         color: Theme.of(context).highlightColor,
                         height: 1.0,
                         margin: EdgeInsets.symmetric(
-                            horizontal: MediaQuery.of(context).size.shortestSide * 0.2, vertical: 24.0),
+                          horizontal: MediaQuery.of(context).size.shortestSide * 0.2,
+                          vertical: 24.0,
+                        ),
                       ),
                     ),
                     SliverToBoxAdapter(
@@ -214,12 +216,12 @@ class PrinterDetailsTile extends StatelessWidget {
   final bool canSave, canRemove, canTestPrint;
 
   const PrinterDetailsTile({
-    Key? key,
+    super.key,
     required this.printer,
     this.canSave = true,
     this.canRemove = true,
     this.canTestPrint = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -303,7 +305,7 @@ class PrinterDetailsTile extends StatelessWidget {
                     onTap: () => viewModal.testPrint(printer),
                   ),
               ],
-            )
+            ),
           ],
         ),
       ),

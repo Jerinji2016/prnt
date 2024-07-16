@@ -3,54 +3,67 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../helpers/globals.dart';
-import '../modals/restaurant.dart';
-import '../modals/user_profile.dart';
+import '../modals/profile/dineazy.profile.dart';
+import '../modals/profile/eazypms.profile.dart';
 
 class DataProvider extends ChangeNotifier {
-  static const _profileKey = "user-profile";
-  static const _restaurantKey = "restaurant";
+  static const _dineazyProfileKey = "dineazy-user-profile";
+  static const _eazypmsProfileKey = "eazypms-user-profile";
 
   DataProvider() {
-    String? profileJson = sharedPreferences.getString(_profileKey);
-    if (profileJson != null) {
-      _profile = UserProfile(jsonDecode(profileJson));
+    String? dineazyProfileJson = sharedPreferences.getString(_dineazyProfileKey);
+    if (dineazyProfileJson != null) {
+      _dineazyProfile = DineazyProfile(jsonDecode(dineazyProfileJson));
     }
 
-    String? restaurantJson = sharedPreferences.getString(_restaurantKey);
-    if (restaurantJson != null) {
-      _restaurant = Restaurant(jsonDecode(restaurantJson));
+    String? eazypmsProfileJson = sharedPreferences.getString(_eazypmsProfileKey);
+    if (eazypmsProfileJson != null) {
+      _eazypmsProfile = EazypmsProfile(jsonDecode(eazypmsProfileJson));
     }
   }
 
-  UserProfile? _profile;
+  DineazyProfile? _dineazyProfile;
 
-  Restaurant? _restaurant;
+  DineazyProfile get dineazyProfile => _dineazyProfile!;
 
-  bool get hasProfile => _profile != null;
+  bool get hasDineazyProfile => _dineazyProfile != null;
 
-  void save(UserProfile profile, Restaurant restaurant) {
-    _profile = profile;
-    _restaurant = restaurant;
+  EazypmsProfile? _eazypmsProfile;
 
+  EazypmsProfile get eazypmsProfile => _eazypmsProfile!;
+
+  bool get hasEazypmsProfile => _eazypmsProfile != null;
+
+  void saveDineazyData(DineazyProfile profile) {
+    _dineazyProfile = profile;
     sharedPreferences.setString(
-      _profileKey,
+      _dineazyProfileKey,
       jsonEncode(profile.json),
     );
-    sharedPreferences.setString(
-      _restaurantKey,
-      jsonEncode(restaurant.json),
-    );
+
+    debugPrint("DataProvider.saveDineazyData: ✅Dineazy Profile Saved");
+    notifyListeners();
   }
 
-  bool hasSubscribed = false;
+  void saveEazypmsData(EazypmsProfile profile) {
+    _eazypmsProfile = profile;
+    sharedPreferences.setString(
+      _eazypmsProfileKey,
+      jsonEncode(profile.json),
+    );
 
-  UserProfile get profile => _profile!;
+    notifyListeners();
+  }
 
-  Restaurant? get restaurant => _restaurant;
+  void logoutOfDineazy() {
+    sharedPreferences.remove(_dineazyProfileKey);
+    _dineazyProfile = null;
+    notifyListeners();
+  }
 
-  void logout() {
-    debugPrint("DataProvider.logout: ");
-    sharedPreferences.remove(_profileKey);
-    sharedPreferences.remove(_restaurantKey);
+  void logoutOfEazyPMS() {
+    sharedPreferences.remove(_eazypmsProfileKey);
+    _eazypmsProfile = null;
+    notifyListeners();
   }
 }

@@ -3,16 +3,16 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
-import '../db/message.table.dart';
-import '../helpers/types.dart';
-import '../helpers/utils.dart';
-import '../modals/message_data.dart';
-import '../modals/print_data.dart';
-import '../service/foreground_service.dart';
-import '../widgets/primary_button.dart';
+import '../../db/message.table.dart';
+import '../../helpers/types.dart';
+import '../../helpers/utils.dart';
+import '../../modals/message_data.dart';
+import '../../modals/print_data.dart';
+import '../../service/foreground_service.dart';
+import '../../widgets/primary_button.dart';
 
 class MessagesScreen extends StatefulWidget {
-  const MessagesScreen({Key? key}) : super(key: key);
+  const MessagesScreen({super.key});
 
   @override
   State<MessagesScreen> createState() => _MessagesScreenState();
@@ -58,34 +58,36 @@ class _MessagesScreenState extends State<MessagesScreen> {
           ),
         ],
       ),
-      body: Builder(builder: (context) {
-        if (_isLoading) {
-          return const Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [CircularProgressIndicator(), SizedBox(height: 10.0), Text("Loading messages...")],
-            ),
-          );
-        }
-
-        if (_messages.isEmpty) {
-          return const Center(
-            child: Text("No messages yet!"),
-          );
-        }
-
-        return ListView.builder(
-          itemBuilder: (context, index) {
-            MessageRecord message = _messages.elementAt(index);
-
-            return MessageTile(
-              index: index,
-              record: message,
+      body: Builder(
+        builder: (context) {
+          if (_isLoading) {
+            return const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [CircularProgressIndicator(), SizedBox(height: 10.0), Text("Loading messages...")],
+              ),
             );
-          },
-          itemCount: _messages.length,
-        );
-      }),
+          }
+
+          if (_messages.isEmpty) {
+            return const Center(
+              child: Text("No messages yet!"),
+            );
+          }
+
+          return ListView.builder(
+            itemBuilder: (context, index) {
+              MessageRecord message = _messages.elementAt(index);
+
+              return MessageTile(
+                index: index,
+                record: message,
+              );
+            },
+            itemCount: _messages.length,
+          );
+        },
+      ),
     );
   }
 }
@@ -95,10 +97,10 @@ class MessageTile extends StatefulWidget {
   final MessageRecord record;
 
   const MessageTile({
-    Key? key,
+    super.key,
     required this.index,
     required this.record,
-  }) : super(key: key);
+  });
 
   @override
   State<MessageTile> createState() => _MessageTileState();
@@ -196,9 +198,9 @@ class ViewReceiptDelegate extends StatefulWidget {
   final PrintData data;
 
   const ViewReceiptDelegate({
-    Key? key,
+    super.key,
     required this.data,
-  }) : super(key: key);
+  });
 
   @override
   State<ViewReceiptDelegate> createState() => _ViewReceiptDelegateState();
@@ -235,8 +237,7 @@ class _ViewReceiptDelegateState extends State<ViewReceiptDelegate> {
         _imageBytes,
         width: MediaQuery.of(context).size.shortestSide,
         fit: BoxFit.contain,
-        alignment: Alignment.topCenter,
-        scale: 4.0,
+        alignment: Alignment.center,
       ),
     );
   }

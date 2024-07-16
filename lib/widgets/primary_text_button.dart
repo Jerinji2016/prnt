@@ -6,11 +6,11 @@ class PrimaryTextButton extends StatelessWidget {
   final EdgeInsetsGeometry padding;
 
   const PrimaryTextButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onTap,
     this.padding = EdgeInsets.zero,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
