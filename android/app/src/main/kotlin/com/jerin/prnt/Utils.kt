@@ -97,7 +97,7 @@ object Utils {
 
         webView.layout(0, 0, width, height)
         webView.loadDataWithBaseURL(null, content, "text/HTML", "UTF-8", null)
-        webView.setInitialScale(1)
+        webView.setInitialScale(100)
         webView.settings.javaScriptEnabled = true
         webView.settings.useWideViewPort = true
         webView.settings.javaScriptCanOpenWindowsAutomatically = true
