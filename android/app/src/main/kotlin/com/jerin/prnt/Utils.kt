@@ -76,7 +76,7 @@ object Utils {
 
     fun Bitmap.toByteArray(): ByteArray {
         ByteArrayOutputStream().apply {
-            compress(Bitmap.CompressFormat.PNG, 100, this)
+            compress(Bitmap.CompressFormat.PNG, 0, this)
             return toByteArray()
         }
     }
@@ -97,7 +97,7 @@ object Utils {
 
         webView.layout(0, 0, width, height)
         webView.loadDataWithBaseURL(null, content, "text/HTML", "UTF-8", null)
-        webView.setInitialScale(1)
+        webView.setInitialScale(100)
         webView.settings.javaScriptEnabled = true
         webView.settings.useWideViewPort = true
         webView.settings.javaScriptCanOpenWindowsAutomatically = true
@@ -111,10 +111,17 @@ object Utils {
                 super.onPageFinished(view, url)
 
                 // delay 300 ms for every `height` 2000
-                val duration = (height / 1000) * 200
+                val duration = (height / 2000) * 300
 
                 Handler(Looper.getMainLooper()).postDelayed({
-                    webView.evaluateJavascript("(function() { return [document.body.offsetWidth, document.body.offsetHeight]; })();") {
+                    webView.evaluateJavascript("(function () {\n" +
+                            "        let billHeight = 0;\n" +
+                            "        const children = document.body.children;\n" +
+                            "        for (let i = 0; i < children.length; i++) {\n" +
+                            "            billHeight += children[i].clientHeight;\n" +
+                            "        }\n" +
+                            "        return [document.body.offsetWidth, billHeight];\n" +
+                            "    })()") {
                         val xy = JSONArray(it)
 
                         Log.d(TAG, "onPageFinished: $xy")
