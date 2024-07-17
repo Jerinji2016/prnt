@@ -30,8 +30,6 @@ class DineazyRevenueCenter extends BaseModal {
 
   String get companyId => json["_id"];
 
-  // String get revenueCenterId => json["revenueCenterId"];
-
   String get name => json["name"];
 
   String get description => json["description"];
