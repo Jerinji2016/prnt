@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../enums/foreground_service_status.dart';
 import '../../../helpers/utils.dart';
 import '../../../providers/data_provider.dart';
 import '../../../service/foreground_service.dart';
