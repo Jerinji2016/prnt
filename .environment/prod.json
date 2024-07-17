@@ -1,0 +1,6 @@
+{
+  "env": "prod",
+  "env_label": "Production",
+  "dineazy_base_url": "https://dineazy-api.elaachi.com/api/v2",
+  "eazypms_base_url": "https://api.eazypms.com/api/v1"
+}

@@ -4,12 +4,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
+import '../helpers/environment.dart';
 import '../modals/profile/eazypms.profile.dart';
 import 'api_service.dart';
 
 class EazypmsApiService extends ApiService<EazypmsProfile> {
   @override
-  String get baseUrl => "https://api.eazypms.com/api/v1";
+  String get baseUrl => Environment.eazypmsBaseUrl;
 
   @override
   Future<String> login(String username, String password) async {

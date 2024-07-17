@@ -1,0 +1,6 @@
+{
+  "env": "qa",
+  "env_label": "QA",
+  "dineazy_base_url": "https://dineazy-api-qa.elaachi.com/api/v2",
+  "eazypms_base_url": "https://api-qa.eazypms.com/api/v1"
+}

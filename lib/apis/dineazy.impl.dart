@@ -4,12 +4,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
+import '../helpers/environment.dart';
 import '../modals/profile/dineazy.profile.dart';
 import 'api_service.dart';
 
 class DineazyApiService extends ApiService<DineazyProfile> {
   @override
-  String get baseUrl => "https://dineazy-api.elaachi.com/api/v2";
+  String get baseUrl => Environment.dineazyBaseUrl;
 
   @override
   Future<String> login(String username, String password) async {
