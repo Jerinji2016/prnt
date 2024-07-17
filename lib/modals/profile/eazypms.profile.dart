@@ -11,7 +11,7 @@ class EazypmsCompany extends BaseModal {
 
   String get name => json["name"];
 
-  String get description => json['description'];
+  String? get description => json['description'];
 
   Iterable<EazypmsRevenueCenter> get revenueCenters => List.from(json["revenueCenters"] ?? []).map(
         (e) => EazypmsRevenueCenter(e),
@@ -27,5 +27,5 @@ class EazypmsRevenueCenter extends BaseModal {
 
   String get objectType => json["objectType"];
 
-  String get redisTopic => "prod_eazypms_${id}_kot";
+  String get redisTopic => "qa_eazypms_${id}_kot";
 }
