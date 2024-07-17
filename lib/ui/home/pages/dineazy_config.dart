@@ -59,14 +59,11 @@ class DineazyConfigPage extends StatelessWidget implements LoginInterface, Logou
   @override
   Widget build(BuildContext context) {
     DataProvider dataProvider = Provider.of<DataProvider>(context);
-    debugPrint("DineazyConfigPage.build: 🐞");
 
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Builder(
         builder: (context) {
-          debugPrint("DineazyConfigPage.build: 🐞");
-
           if (!dataProvider.hasDineazyProfile) {
             return LoginWidget(
               title: "Login to Dineazy",
