@@ -7,7 +7,7 @@ import 'helpers/globals.dart';
 import 'helpers/utils.dart';
 import 'providers/data_provider.dart';
 import 'providers/theme_provider.dart';
-import 'service/foreground_service.dart';
+import 'service/headless_service.dart';
 import 'ui/home/home.dart';
 
 void main() async {
@@ -15,7 +15,7 @@ void main() async {
 
   sharedPreferences = await SharedPreferences.getInstance();
   await Future.wait([
-    ForegroundService.registerHeadlessEntry(),
+    registerHeadlessEntry(),
     DB.initialize(),
   ]);
   getPrinters();

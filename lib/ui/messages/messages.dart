@@ -8,7 +8,7 @@ import '../../helpers/types.dart';
 import '../../helpers/utils.dart';
 import '../../modals/message_data.dart';
 import '../../modals/print_data.dart';
-import '../../service/foreground_service.dart';
+import '../../service/headless_service.dart';
 import '../../widgets/primary_button.dart';
 
 class MessagesScreen extends StatefulWidget {

@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../enums/foreground_service_status.dart';
 import '../../../helpers/utils.dart';
 import '../../../providers/data_provider.dart';
-import '../../../service/foreground_service.dart';
+import '../../../service/headless_service.dart';
 import '../../../widgets/primary_button.dart';
 
 class DineazyNotificationServicePanel extends StatefulWidget {

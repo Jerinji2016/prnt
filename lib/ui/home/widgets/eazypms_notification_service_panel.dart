@@ -5,7 +5,7 @@ import '../../../enums/foreground_service_status.dart';
 import '../../../helpers/utils.dart';
 import '../../../modals/profile/eazypms.profile.dart';
 import '../../../providers/data_provider.dart';
-import '../../../service/foreground_service.dart';
+import '../../../service/headless_service.dart';
 import '../../../widgets/primary_button.dart';
 
 class EazypmsNotificationServicePanel extends StatelessWidget {
