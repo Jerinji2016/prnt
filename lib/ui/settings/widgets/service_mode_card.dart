@@ -33,7 +33,6 @@ class _ServiceModeCardState extends State<ServiceModeCard> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
                 Icons.report_outlined,
@@ -42,8 +41,8 @@ class _ServiceModeCardState extends State<ServiceModeCard> {
               const SizedBox(width: 8.0),
               const Expanded(
                 child: Text(
-                  "You print services may not work if the app is in background for too long.",
-                  style: TextStyle(fontSize: 14.0),
+                  "Your print services may not work as expected when the app is in background for too long.",
+                  style: TextStyle(fontSize: 12.0),
                 ),
               ),
             ],
@@ -74,7 +73,7 @@ class _ServiceModeCardState extends State<ServiceModeCard> {
                     Text(
                       _isBackground ? "Services will run in background" : "Services will run in foreground",
                       style: TextStyle(
-                        fontSize: 14.0,
+                        fontSize: 12.0,
                         color: Theme.of(context).disabledColor,
                       ),
                     ),

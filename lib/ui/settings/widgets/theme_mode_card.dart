@@ -47,7 +47,7 @@ class _ThemeModeCardState extends State<ThemeModeCard> {
                 Text(
                   themeDescription,
                   style: TextStyle(
-                    fontSize: 14.0,
+                    fontSize: 12.0,
                     color: Theme.of(context).disabledColor,
                   ),
                 ),
