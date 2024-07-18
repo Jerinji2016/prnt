@@ -17,8 +17,6 @@ class DineazyNotificationServicePanel extends StatefulWidget {
 class _DineazyNotificationServicePanelState extends State<DineazyNotificationServicePanel> {
   ForegroundServiceStatus status = ForegroundServiceStatus.stopped;
 
-  bool _runOnUiIsolate = true;
-
   @override
   void initState() {
     super.initState();
@@ -61,9 +59,9 @@ class _DineazyNotificationServicePanelState extends State<DineazyNotificationSer
   }
 
   void _onTap() async {
-    if (_runOnUiIsolate) {
       return _runOnUIIsolate();
-    }
+    // if (_runOnUiIsolate) {
+    // }
 
     bool isServiceRunning = status == ForegroundServiceStatus.running;
     setState(() => status = ForegroundServiceStatus.loading);
@@ -81,20 +79,20 @@ class _DineazyNotificationServicePanelState extends State<DineazyNotificationSer
     _loadServiceStatus();
   }
 
-  void _onSwitchTapped(bool value) {
-    showToast(context, "Background Service is unavailable");
-    return;
-
-    //  ignore: dead_code
-    if (status == ForegroundServiceStatus.running) {
-      showToast(context, "Stop service to toggle");
-      return;
-    }
-    if (!value) {
-      showToast(context, "Service won't work as expected");
-    }
-    setState(() => _runOnUiIsolate = value);
-  }
+  // void _onSwitchTapped(bool value) {
+  //   showToast(context, "Background Service is unavailable");
+  //   return;
+  //
+  //   //  ignore: dead_code
+  //   if (status == ForegroundServiceStatus.running) {
+  //     showToast(context, "Stop service to toggle");
+  //     return;
+  //   }
+  //   if (!value) {
+  //     showToast(context, "Service won't work as expected");
+  //   }
+  //   setState(() => _runOnUiIsolate = value);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -154,30 +152,6 @@ class _DineazyNotificationServicePanelState extends State<DineazyNotificationSer
                       ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        height: 30.0,
-                        width: 40.0,
-                        child: FittedBox(
-                          child: Switch(
-                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            value: _runOnUiIsolate,
-                            onChanged: _onSwitchTapped,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8.0),
-                      Text(
-                        _runOnUiIsolate ? "ON FOREGROUND" : "ON BACKGROUND",
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          color: Theme.of(context).hintColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8.0),
                 ],
               ),
             ),

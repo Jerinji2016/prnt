@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/theme_provider.dart';
 import 'home.vm.dart';
 import 'pages/dineazy_config.dart';
 import 'pages/eazypms_config.dart';
@@ -12,8 +11,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
-
     return ChangeNotifierProvider(
       create: (context) => HomeViewModal(),
       builder: (context, child) {
@@ -39,11 +36,6 @@ class HomeScreen extends StatelessWidget {
                 icon: const Icon(Icons.description_outlined),
                 tooltip: "Message Logs",
               ),
-              // IconButton(
-              //   onPressed: themeProvider.toggleTheme,
-              //   icon: Icon(themeProvider.icon),
-              //   tooltip: "Change Theme",
-              // ),
               IconButton(
                 onPressed: () => viewModal.onSettingsIconTapped(context),
                 icon: const Icon(Icons.settings_outlined),

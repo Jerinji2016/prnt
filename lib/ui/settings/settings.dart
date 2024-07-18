@@ -85,6 +85,7 @@ class Settings extends StatelessWidget {
           const ServiceModeCard(),
           const SizedBox(height: 16.0),
           const ThemeModeCard(),
+          const SizedBox(height: 24.0),
           _buildEnvironmentText(context),
         ],
       ),
