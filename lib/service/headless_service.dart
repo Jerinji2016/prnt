@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import 'package:pos_printer_manager/models/pos_printer.dart';
@@ -10,38 +11,33 @@ import 'package:pos_printer_manager/pos_printer_manager.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
 import 'package:redis/redis.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 // ignore: depend_on_referenced_packages
 import 'package:shared_preferences_android/shared_preferences_android.dart';
 
 import '../db/db.dart';
 import '../db/message.table.dart';
 import '../db/printer.table.dart';
+import '../helpers/environment.dart';
 import '../helpers/extensions.dart';
 import '../helpers/globals.dart';
 import '../helpers/utils.dart';
 import '../modals/message_data.dart';
 import '../modals/print_data.dart';
 
-class ForegroundService {
-  ForegroundService._();
-
-  static Future<void> registerHeadlessEntry() async {
-    debugPrint("Headless.registerHeadlessEntry: ");
-    if (Platform.isAndroid) {
-      int? callbackMethodId = PluginUtilities.getCallbackHandle(headlessEntry)?.toRawHandle();
-      if (callbackMethodId == null) {
-        debugPrint("ForegroundService._registerHeadlessTask: Failed to get callback ID");
-        return;
-      }
-      bool response = await registerServiceCallbackId(callbackMethodId);
-      debugPrint("ForegroundService.registerHeadlessEntry: Register Callback: ${response ? "✅" : "❌"}");
-    } else if (Platform.isIOS) {
-      debugPrint("⚠️ WARNING: background sync not implemented for iOS!");
-      debugPrint("⚠️ WARNING: offline sync not implemented for iOS!");
-    } else {
-      throw "❌ Unimplemented platform";
-    }
+Future<void> registerHeadlessEntry() async {
+  debugPrint("Headless.registerHeadlessEntry: ");
+  if (!Platform.isAndroid) {
+    throw "Unimplemented Platform $defaultTargetPlatform";
   }
+
+  int? callbackMethodId = PluginUtilities.getCallbackHandle(headlessEntry)?.toRawHandle();
+  if (callbackMethodId == null) {
+    debugPrint("ForegroundService._registerHeadlessTask: Failed to get callback ID");
+    return;
+  }
+  bool response = await registerServiceCallbackId(callbackMethodId);
+  debugPrint("ForegroundService.registerHeadlessEntry: Register Callback: ${response ? "✅ Success" : "❌ Failed"}");
 }
 
 @pragma('vm:entry-point')
@@ -65,11 +61,11 @@ Future<void> runServerOnMainIsolate(String topic) => _registerWithRedisServer(to
 
 Future<void> stopServerOnMainIsolate(String topic) async {
   final cmd = await RedisConnection().connect(
-    RedisConfig.host,
-    RedisConfig.port,
+    Environment.redisHost,
+    Environment.redisPort,
   );
 
-  await cmd.send_object(['AUTH', RedisConfig.password]);
+  await cmd.send_object(['AUTH', Environment.redisPassword]);
   final pubSub = PubSub(cmd);
   pubSub.unsubscribe([topic]);
   debugPrint("stopServerOnMainIsolate: ✅ Unsubscribed successfully");
@@ -77,11 +73,11 @@ Future<void> stopServerOnMainIsolate(String topic) async {
 
 Future<void> _registerWithRedisServer(String topic) async {
   final cmd = await RedisConnection().connect(
-    RedisConfig.host,
-    RedisConfig.port,
+    Environment.redisHost,
+    Environment.redisPort,
   );
 
-  await cmd.send_object(['AUTH', RedisConfig.password]);
+  await cmd.send_object(['AUTH', Environment.redisPassword]);
   final pubSub = PubSub(cmd);
 
   pubSub.subscribe([topic]);

@@ -2,5 +2,8 @@
   "env": "stg",
   "env_label": "Stage",
   "dineazy_base_url": "https://dineazy-api-stg.elaachi.com/api/v2",
-  "eazypms_base_url": "https://api-stage.eazypms.com/api/v1"
+  "eazypms_base_url": "https://api-stage.eazypms.com/api/v1",
+  "redis_host": "54.91.111.189",
+  "redis_port": "9736",
+  "redis_password": "U.+uN_4G=GLeP=j7"
 }
