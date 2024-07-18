@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import '../enums/service_mode.dart';
 import '../helpers/globals.dart';
 import '../modals/profile/dineazy.profile.dart';
 import '../modals/profile/eazypms.profile.dart';
@@ -9,6 +10,8 @@ import '../modals/profile/eazypms.profile.dart';
 class DataProvider extends ChangeNotifier {
   static const _dineazyProfileKey = "dineazy-user-profile";
   static const _eazypmsProfileKey = "eazypms-user-profile";
+
+  static const _serviceModeKey = "service-mode";
 
   DataProvider() {
     String? dineazyProfileJson = sharedPreferences.getString(_dineazyProfileKey);
@@ -19,6 +22,11 @@ class DataProvider extends ChangeNotifier {
     String? eazypmsProfileJson = sharedPreferences.getString(_eazypmsProfileKey);
     if (eazypmsProfileJson != null) {
       _eazypmsProfile = EazypmsProfile(jsonDecode(eazypmsProfileJson));
+    }
+
+    int? modeIndex = sharedPreferences.getInt(_serviceModeKey);
+    if (modeIndex != null) {
+      _serviceMode = ServiceMode.fromIndex(modeIndex);
     }
   }
 
@@ -33,6 +41,10 @@ class DataProvider extends ChangeNotifier {
   EazypmsProfile get eazypmsProfile => _eazypmsProfile!;
 
   bool get hasEazypmsProfile => _eazypmsProfile != null;
+
+  ServiceMode _serviceMode = ServiceMode.background;
+
+  ServiceMode get serviceMode => _serviceMode;
 
   void saveDineazyData(DineazyProfile profile) {
     _dineazyProfile = profile;
@@ -52,6 +64,12 @@ class DataProvider extends ChangeNotifier {
       jsonEncode(profile.json),
     );
 
+    notifyListeners();
+  }
+
+  void saveServiceMode(ServiceMode mode) {
+    sharedPreferences.setInt(_serviceModeKey, mode.index);
+    _serviceMode = mode;
     notifyListeners();
   }
 

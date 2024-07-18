@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../../enums/service_mode.dart';
+import '../../../providers/data_provider.dart';
 import '../../../widgets/primary_card.dart';
 
 class ServiceModeCard extends StatefulWidget {
@@ -10,12 +13,10 @@ class ServiceModeCard extends StatefulWidget {
 }
 
 class _ServiceModeCardState extends State<ServiceModeCard> {
-  bool _isBackground = true;
-
-  void _onSwitchChanged(bool value) {
-    setState(() {
-      _isBackground = value;
-    });
+  void _onSwitchChanged(BuildContext context, bool value) {
+    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
+    ServiceMode mode = value ? ServiceMode.background : ServiceMode.foreground;
+    dataProvider.saveServiceMode(mode);
   }
 
   Widget _buildForegroundWarningCard() {
@@ -54,6 +55,9 @@ class _ServiceModeCardState extends State<ServiceModeCard> {
 
   @override
   Widget build(BuildContext context) {
+    DataProvider dataProvider = Provider.of<DataProvider>(context);
+    bool isBackground = dataProvider.serviceMode == ServiceMode.background;
+
     return PrimaryCard(
       child: Column(
         children: [
@@ -71,7 +75,7 @@ class _ServiceModeCardState extends State<ServiceModeCard> {
                       ),
                     ),
                     Text(
-                      _isBackground ? "Services will run in background" : "Services will run in foreground",
+                      isBackground ? "Services will run in background" : "Services will run in foreground",
                       style: TextStyle(
                         fontSize: 12.0,
                         color: Theme.of(context).disabledColor,
@@ -81,15 +85,15 @@ class _ServiceModeCardState extends State<ServiceModeCard> {
                 ),
               ),
               Switch(
-                value: _isBackground,
-                onChanged: _onSwitchChanged,
+                value: isBackground,
+                onChanged: (value) => _onSwitchChanged(context, value),
               ),
             ],
           ),
           AnimatedSize(
             duration: const Duration(milliseconds: 300),
             curve: Curves.ease,
-            child: _isBackground ? const SizedBox.shrink() : _buildForegroundWarningCard(),
+            child: isBackground ? const SizedBox.shrink() : _buildForegroundWarningCard(),
           )
         ],
       ),

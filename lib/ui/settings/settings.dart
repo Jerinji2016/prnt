@@ -8,6 +8,7 @@ class Settings extends StatelessWidget {
   static Future<void> show(BuildContext context) async {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (context) {
         return BottomSheet(
           onClosing: () {},
