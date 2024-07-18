@@ -44,7 +44,9 @@ class DataProvider extends ChangeNotifier {
 
   ServiceMode _serviceMode = ServiceMode.background;
 
-  ServiceMode get serviceMode => _serviceMode;
+  bool get isBackgroundServiceMode => _serviceMode == ServiceMode.background;
+
+  bool get isForegroundServiceMode => _serviceMode == ServiceMode.foreground;
 
   void saveDineazyData(DineazyProfile profile) {
     _dineazyProfile = profile;

@@ -56,7 +56,6 @@ class _ServiceModeCardState extends State<ServiceModeCard> {
   @override
   Widget build(BuildContext context) {
     DataProvider dataProvider = Provider.of<DataProvider>(context);
-    bool isBackground = dataProvider.serviceMode == ServiceMode.background;
 
     return PrimaryCard(
       child: Column(
@@ -75,7 +74,7 @@ class _ServiceModeCardState extends State<ServiceModeCard> {
                       ),
                     ),
                     Text(
-                      isBackground ? "Services will run in background" : "Services will run in foreground",
+                      dataProvider.isBackgroundServiceMode ? "Services will run in background" : "Services will run in foreground",
                       style: TextStyle(
                         fontSize: 12.0,
                         color: Theme.of(context).disabledColor,
@@ -85,7 +84,7 @@ class _ServiceModeCardState extends State<ServiceModeCard> {
                 ),
               ),
               Switch(
-                value: isBackground,
+                value: dataProvider.isBackgroundServiceMode,
                 onChanged: (value) => _onSwitchChanged(context, value),
               ),
             ],
@@ -93,7 +92,7 @@ class _ServiceModeCardState extends State<ServiceModeCard> {
           AnimatedSize(
             duration: const Duration(milliseconds: 300),
             curve: Curves.ease,
-            child: isBackground ? const SizedBox.shrink() : _buildForegroundWarningCard(),
+            child: dataProvider.isBackgroundServiceMode ? const SizedBox.shrink() : _buildForegroundWarningCard(),
           )
         ],
       ),
