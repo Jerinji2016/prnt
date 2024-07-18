@@ -27,17 +27,26 @@ class RedisService {
 
   String get password => Environment.redisPassword;
 
-  Future<void> runServerOnMainIsolate() => _registerWithRedisServer();
+  Future<void> startListeningOnUiIsolate() => _startListeningOnTopic();
 
-  Future<void> stopServerOnMainIsolate() async {
+  Future<void> stopListeningOnUiIsolate() async => _stopListeningOnTopic();
+
+  String get type {
+    if (topic.contains("dineazy")) {
+      return "dineazy";
+    }
+    return "eazypms";
+  }
+
+  Future<void> _stopListeningOnTopic() async {
     final cmd = await RedisConnection().connect(host, port);
     await cmd.send_object(['AUTH', password]);
     final pubSub = PubSub(cmd);
     pubSub.unsubscribe([topic]);
-    debugPrint("stopServerOnMainIsolate: ✅ Unsubscribed successfully");
+    debugPrint("RedisService._stopListeningOnTopic: ✅Unsubscribed successfully");
   }
 
-  Future<void> _registerWithRedisServer() async {
+  Future<void> _startListeningOnTopic() async {
     final cmd = await RedisConnection().connect(host, port);
     await cmd.send_object(['AUTH', password]);
     final pubSub = PubSub(cmd);
@@ -45,11 +54,11 @@ class RedisService {
 
     final stream = pubSub.getStream();
     await for (final msg in stream) {
-      debugPrint("_registerWithRedisServer: new message");
+      debugPrint("RedisService._startListeningOnTopic: 🐞new message");
       MessageData messageData = MessageData.fromMessageList(msg);
 
       if (messageData.type == "subscribe" && messageData.data == 1) {
-        debugPrint("_PubSubScreenState._onSubscribeTapped: ✅ Subscribed successfully");
+        debugPrint("RedisService._startListeningOnTopic: ✅Subscribed successfully");
         continue;
       }
 
@@ -58,26 +67,27 @@ class RedisService {
         PrintMessageData printMessageData = PrintMessageData.fromMessageList(msg);
 
         await MessageTable().add(printMessageData);
-        debugPrint("_dispatchPrint: ✅ Message saved successfully");
+        debugPrint("RedisService._startListeningOnTopic: ✅Message saved successfully");
 
         dispatchPrint(printMessageData);
         continue;
       }
     }
 
-    debugPrint("_registerWithRedisServer: finishing connection...");
+    debugPrint("RedisService._startListeningOnTopic: 🐞finishing connection...");
   }
 
   static Future<void> dispatchPrint(PrintMessageData printMessageData) async {
     POSPrinter? printer = await PrinterTable().getPrinterByName(printMessageData.data.printer.value);
     if (printer == null) {
-      debugPrint("_dispatchPrint: ❌ERROR: Expected Printer(${printMessageData.data.printer.value}) was not found");
+      debugPrint(
+          "RedisService.dispatchPrint: ❌ERROR: Expected Printer(${printMessageData.data.printer.value}) was not found");
       return;
     }
 
     ConnectionType? connectionType = printer.connectionType;
     if (connectionType == null) {
-      debugPrint("_dispatchPrint: ❌ERROR: Unknown Printer connection type");
+      debugPrint("RedisService.dispatchPrint: ❌ERROR: Unknown Printer connection type");
       return;
     }
 
@@ -85,13 +95,12 @@ class RedisService {
     debugPrint("_dispatchPrint: value: ${printMessageData.data.printer.value}");
 
     PrinterManager manager = await connectionType.getAdapter().connect(printer);
-    debugPrint("_dispatchPrint: ✅ Connected to ${printer.name} | ${printer.address}");
+    debugPrint("RedisService.dispatchPrint: ✅Connected to ${printer.name} | ${printer.address}");
 
     final bytes = await contentToImage(printMessageData.data.template);
     img.Image? image = img.decodeImage(Uint8List.fromList(bytes));
-
     if (image == null) {
-      debugPrint("_dispatchPrint: ❌ERROR: Failed to convert to Image");
+      debugPrint("RedisService.dispatchPrint: ❌ERROR: Failed to convert to Image");
       return;
     }
 
@@ -103,6 +112,6 @@ class RedisService {
     printBytes += generator.cut(mode: PosCutMode.partial);
 
     await connectionType.getAdapter().dispatchPrint(manager, printBytes);
-    debugPrint("dispatchPrint: ✅ Print Dispatched successfully");
+    debugPrint("RedisService.dispatchPrint: ✅Print Dispatched successfully");
   }
 }

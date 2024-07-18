@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../messages/messages.dart';
+import '../settings/settings.dart';
 import '../setup_printers/setup_printers.dart';
 
 class HomeViewModal extends ChangeNotifier {
@@ -8,6 +9,8 @@ class HomeViewModal extends ChangeNotifier {
         context,
         MaterialPageRoute(builder: (context) => const MessagesScreen()),
       );
+
+  void onSettingsIconTapped(BuildContext context) => Settings.show(context);
 
   void onSetupPrinterTapped(BuildContext context) => Navigator.push(
         context,

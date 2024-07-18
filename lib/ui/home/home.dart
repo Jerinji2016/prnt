@@ -39,10 +39,15 @@ class HomeScreen extends StatelessWidget {
                 icon: const Icon(Icons.description_outlined),
                 tooltip: "Message Logs",
               ),
+              // IconButton(
+              //   onPressed: themeProvider.toggleTheme,
+              //   icon: Icon(themeProvider.icon),
+              //   tooltip: "Change Theme",
+              // ),
               IconButton(
-                onPressed: themeProvider.toggleTheme,
-                icon: Icon(themeProvider.icon),
-                tooltip: "Change Theme",
+                onPressed: () => viewModal.onSettingsIconTapped(context),
+                icon: const Icon(Icons.settings_outlined),
+                tooltip: "Settings",
               ),
               const SizedBox(width: 16.0),
             ],

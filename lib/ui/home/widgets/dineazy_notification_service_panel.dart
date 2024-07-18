@@ -43,14 +43,14 @@ class _DineazyNotificationServicePanelState extends State<DineazyNotificationSer
 
     RedisService redisService = RedisService(topic);
     if (!isServiceRunning) {
-      redisService.runServerOnMainIsolate();
+      redisService.startListeningOnUiIsolate();
 
       nextStatus = ForegroundServiceStatus.running;
       if (mounted) {
         showToast(context, "Subscribed successfully", color: Colors.green);
       }
     } else {
-      await redisService.stopServerOnMainIsolate();
+      await redisService.stopListeningOnUiIsolate();
       nextStatus = ForegroundServiceStatus.stopped;
       if (mounted) {
         showToast(context, "Unsubscribed successfully");
