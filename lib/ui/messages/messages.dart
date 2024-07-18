@@ -8,7 +8,7 @@ import '../../helpers/types.dart';
 import '../../helpers/utils.dart';
 import '../../modals/message_data.dart';
 import '../../modals/print_data.dart';
-import '../../service/headless_service.dart';
+import '../../service/redis_service.dart';
 import '../../widgets/primary_button.dart';
 
 class MessagesScreen extends StatefulWidget {
@@ -40,7 +40,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
       ..addAll(messages);
 
     //  simply to get loading feeling
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(milliseconds: 500));
 
     setState(() => _isLoading = false);
   }
@@ -119,7 +119,7 @@ class _MessageTileState extends State<MessageTile> {
   void _onPrintTapped(PrintMessageData message) async {
     setState(() => _isPrintLoading = true);
 
-    await dispatchPrint(message);
+    await RedisService.dispatchPrint(message);
 
     setState(() => _isPrintLoading = true);
     if (mounted) {

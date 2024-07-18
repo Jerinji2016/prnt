@@ -5,7 +5,7 @@ import '../../../enums/foreground_service_status.dart';
 import '../../../helpers/utils.dart';
 import '../../../modals/profile/eazypms.profile.dart';
 import '../../../providers/data_provider.dart';
-import '../../../service/headless_service.dart';
+import '../../../service/redis_service.dart';
 import '../../../widgets/primary_button.dart';
 
 class EazypmsNotificationServicePanel extends StatelessWidget {
@@ -52,15 +52,17 @@ class _RevenueCenterServiceTileState extends State<RevenueCenterServiceTile> {
 
     setState(() => status = ForegroundServiceStatus.loading);
     ForegroundServiceStatus nextStatus;
+
+    RedisService redisService = RedisService(topic);
     if (!isServiceRunning) {
-      runServerOnMainIsolate(topic);
+      redisService.runServerOnMainIsolate();
 
       nextStatus = ForegroundServiceStatus.running;
       if (mounted) {
         showToast(context, "Subscribed successfully", color: Colors.green);
       }
     } else {
-      await stopServerOnMainIsolate(topic);
+      await redisService.stopServerOnMainIsolate();
       nextStatus = ForegroundServiceStatus.stopped;
       if (mounted) {
         showToast(context, "Unsubscribed successfully");
@@ -129,7 +131,7 @@ class _RevenueCenterServiceTileState extends State<RevenueCenterServiceTile> {
                           status.icon,
                           color: status.iconColor,
                           size: 20.0,
-                        )
+                        ),
                       ],
                     ),
                     _buildStatusText(),
