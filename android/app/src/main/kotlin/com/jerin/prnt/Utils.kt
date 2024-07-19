@@ -20,13 +20,13 @@ import kotlin.math.absoluteValue
 object Utils {
     private const val TAG = "Utils"
 
-    private const val displayWidthKey = "d-width"
-    private const val displayHeightKey = "d-height"
+    private const val KEY_DISPLAY_WIDTH = "d-width"
+    private const val HEY_DISPLAY_HEIGHT = "d-height"
 
     private fun getDisplaySize(context: Context): Size? {
         val sharedPreferences = context.getSharedPreferences(TAG, Context.MODE_PRIVATE)
-        val width = sharedPreferences.getInt(displayWidthKey, -1)
-        val height = sharedPreferences.getInt(displayHeightKey, -1)
+        val width = sharedPreferences.getInt(KEY_DISPLAY_WIDTH, -1)
+        val height = sharedPreferences.getInt(HEY_DISPLAY_HEIGHT, -1)
 
         if (width == -1 || height == -1)
             return null
@@ -51,8 +51,8 @@ object Utils {
 
         val sharedPreferences = context.getSharedPreferences(TAG, Context.MODE_PRIVATE)
         sharedPreferences.edit().apply {
-            putInt(displayWidthKey, width)
-            putInt(displayHeightKey, height)
+            putInt(KEY_DISPLAY_WIDTH, width)
+            putInt(HEY_DISPLAY_HEIGHT, height)
             apply()
         }
         Log.d(TAG, "saveDisplaySize: ✅ Display Size Saved")

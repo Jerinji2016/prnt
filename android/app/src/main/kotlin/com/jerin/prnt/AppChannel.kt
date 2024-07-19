@@ -12,13 +12,13 @@ class AppChannel private constructor(private val context: Context) : MethodChann
 
         private const val CHANNEL_NAME = "com.jerin.prnt/main"
 
-        private const val registerCallbackMethod = "registerCallbackId"
-        private const val startServiceMethod = "startFgService"
+        private const val REGISTER_CALLBACK_ID_METHOD = "registerCallbackId"
 
-        private const val contentToImage = "contentToImage"
+        private const val START_SERVICE_METHOD = "startFgService"
+        private const val STOP_SERVICE_METHOD = "stopServiceMethod"
+        private const val GET_SERVICE_STATUS_METHOD = "getServiceStatus"
 
-        private const val getServiceStatusMethod = "getServiceStatus"
-        private const val stopServiceMethod = "stopServiceMethod"
+        private const val CONTENT_TO_IMAGE_METHOD = "contentToImage"
 
         fun registerChannel(context: Context, flutterEngine: FlutterEngine) {
             MethodChannel(
@@ -31,7 +31,7 @@ class AppChannel private constructor(private val context: Context) : MethodChann
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         Log.d(TAG, "onMethodCall: ${call.method}")
         when (call.method) {
-            registerCallbackMethod -> {
+            REGISTER_CALLBACK_ID_METHOD -> {
                 try {
                     val callbackId = call.arguments as Long
                     ForegroundDispatcher.register(context, callbackId)
@@ -42,7 +42,7 @@ class AppChannel private constructor(private val context: Context) : MethodChann
                 }
             }
 
-            startServiceMethod -> {
+            START_SERVICE_METHOD -> {
                 try {
                     ForegroundService.start()
                     result.success(true)
@@ -52,14 +52,14 @@ class AppChannel private constructor(private val context: Context) : MethodChann
                 }
             }
 
-            contentToImage -> {
+            CONTENT_TO_IMAGE_METHOD -> {
                 val args = call.arguments as String
                 Utils.convertHtmlToImageBytes(context, args, result)
             }
 
-            getServiceStatusMethod -> result.success(ForegroundService.isRunning)
+            GET_SERVICE_STATUS_METHOD -> result.success(ForegroundService.isRunning)
 
-            stopServiceMethod -> {
+            STOP_SERVICE_METHOD -> {
                 try {
                     ForegroundService.stop()
                     result.success(true)
