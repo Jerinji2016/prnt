@@ -17,11 +17,23 @@ import '../helpers/utils.dart';
 import '../modals/message_data.dart';
 import '../modals/print_data.dart';
 import '../providers/data_provider.dart';
+import 'headless_service.dart';
+
+const _foregroundTopicsKey = "foreground-topics";
+const _backgroundTopicKey = "background_topics";
 
 class RedisService {
   final String topic;
 
   RedisService(this.topic);
+
+  static List<String> listeningTopics(BuildContext context) {
+    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
+    String key = dataProvider.isForegroundServiceMode ? _foregroundTopicsKey : _backgroundTopicKey;
+    String? topicsString = sharedPreferences.getString(key);
+    if (topicsString == null) return [];
+    return jsonDecode(topicsString);
+  }
 
   String get host => Environment.redisHost;
 
