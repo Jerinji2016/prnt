@@ -74,7 +74,7 @@ class _ServiceModeCardState extends State<ServiceModeCard> {
                       ),
                     ),
                     Text(
-                      dataProvider.isBackgroundServiceMode ? "Services will run in background" : "Services will run in foreground",
+                      "Services will run in ${dataProvider.isBackgroundServiceMode ? "background" : "foreground"}",
                       style: TextStyle(
                         fontSize: 12.0,
                         color: Theme.of(context).disabledColor,
@@ -93,7 +93,7 @@ class _ServiceModeCardState extends State<ServiceModeCard> {
             duration: const Duration(milliseconds: 300),
             curve: Curves.ease,
             child: dataProvider.isBackgroundServiceMode ? const SizedBox.shrink() : _buildForegroundWarningCard(),
-          )
+          ),
         ],
       ),
     );
