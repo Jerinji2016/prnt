@@ -53,23 +53,32 @@ class _RevenueCenterServiceTileState extends State<RevenueCenterServiceTile> {
     setState(() => status = ForegroundServiceStatus.loading);
     ForegroundServiceStatus nextStatus;
 
-    RedisService redisService = RedisService(topic);
-    if (!isServiceRunning) {
-      redisService.startListeningOnUiIsolate();
+    try {
+      RedisService redisService = RedisService(topic);
+      String toastMessage;
+      if (!isServiceRunning) {
+        await redisService.listenToTopic(context);
 
-      nextStatus = ForegroundServiceStatus.running;
-      if (mounted) {
-        showToast(context, "Subscribed successfully", color: Colors.green);
+        nextStatus = ForegroundServiceStatus.running;
+        toastMessage = "Subscribed successfully";
+      } else {
+        await redisService.stopListeningToTopic(context);
+        nextStatus = ForegroundServiceStatus.stopped;
+        toastMessage = "Unsubscribed successfully";
       }
-    } else {
-      await redisService.stopListeningOnUiIsolate();
-      nextStatus = ForegroundServiceStatus.stopped;
+
+      await Future.delayed(const Duration(seconds: 1));
+      setState(() => status = nextStatus);
       if (mounted) {
-        showToast(context, "Unsubscribed successfully");
+        showToast(context, toastMessage, color: Colors.green);
+      }
+    } catch (e) {
+      debugPrint("_RevenueCenterServiceTileState._onTap: ❌ERROR: $e");
+      setState(() => status = ForegroundServiceStatus.stopped);
+      if (mounted) {
+        showToast(context, e.toString(), color: Colors.red);
       }
     }
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() => status = nextStatus);
   }
 
   Widget _buildStatusText() {
@@ -144,7 +153,10 @@ class _RevenueCenterServiceTileState extends State<RevenueCenterServiceTile> {
                   duration: const Duration(milliseconds: 300),
                   child: status == ForegroundServiceStatus.loading
                       ? const Center(
-                          child: CircularProgressIndicator(),
+                          child: SizedBox.square(
+                            dimension: 28.0,
+                            child: CircularProgressIndicator(),
+                          ),
                         )
                       : PrimaryButton(
                           onTap: _onTap,

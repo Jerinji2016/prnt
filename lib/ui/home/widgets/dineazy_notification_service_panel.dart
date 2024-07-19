@@ -30,7 +30,7 @@ class _DineazyNotificationServicePanelState extends State<DineazyNotificationSer
     });
   }
 
-  void _runOnUIIsolate() async {
+  void _onTap() async {
     DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
     String topic = dataProvider.dineazyProfile.redisTopic;
 
@@ -39,60 +39,33 @@ class _DineazyNotificationServicePanelState extends State<DineazyNotificationSer
     setState(() => status = ForegroundServiceStatus.loading);
     ForegroundServiceStatus nextStatus;
 
-    RedisService redisService = RedisService(topic);
-    if (!isServiceRunning) {
-      redisService.startListeningOnUiIsolate();
+    try {
+      RedisService redisService = RedisService(topic);
+      String toastMessage;
+      if (!isServiceRunning) {
+        await redisService.listenToTopic(context);
 
-      nextStatus = ForegroundServiceStatus.running;
-      if (mounted) {
-        showToast(context, "Subscribed successfully", color: Colors.green);
+        nextStatus = ForegroundServiceStatus.running;
+        toastMessage = "Subscribed successfully";
+      } else {
+        await redisService.stopListeningToTopic(context);
+        nextStatus = ForegroundServiceStatus.stopped;
+        toastMessage = "Unsubscribed successfully";
       }
-    } else {
-      await redisService.stopListeningOnUiIsolate();
-      nextStatus = ForegroundServiceStatus.stopped;
+
+      await Future.delayed(const Duration(seconds: 1));
+      setState(() => status = nextStatus);
       if (mounted) {
-        showToast(context, "Unsubscribed successfully");
+        showToast(context, toastMessage, color: Colors.green);
+      }
+    } catch (e) {
+      debugPrint("_DineazyNotificationServicePanelState._onTap: ❌ERROR: $e");
+      setState(() => status = ForegroundServiceStatus.stopped);
+      if (mounted) {
+        showToast(context, e.toString(), color: Colors.red);
       }
     }
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() => status = nextStatus);
   }
-
-  void _onTap() async {
-      return _runOnUIIsolate();
-    // if (_runOnUiIsolate) {
-    // }
-
-    bool isServiceRunning = status == ForegroundServiceStatus.running;
-    setState(() => status = ForegroundServiceStatus.loading);
-
-    if (isServiceRunning) {
-      bool response = await stopForegroundService();
-      await Future.delayed(const Duration(seconds: 2));
-      debugPrint("_PrinterServiceStatusPanelState._onTap: Stop Foreground Service status: ${response ? "✅" : "❌"}");
-    } else {
-      bool response = await startForegroundService();
-      await Future.delayed(const Duration(seconds: 5));
-      debugPrint("_PrinterServiceStatusPanelState._onTap: Start Foreground Service status: ${response ? "✅" : "❌"}");
-    }
-
-    _loadServiceStatus();
-  }
-
-  // void _onSwitchTapped(bool value) {
-  //   showToast(context, "Background Service is unavailable");
-  //   return;
-  //
-  //   //  ignore: dead_code
-  //   if (status == ForegroundServiceStatus.running) {
-  //     showToast(context, "Stop service to toggle");
-  //     return;
-  //   }
-  //   if (!value) {
-  //     showToast(context, "Service won't work as expected");
-  //   }
-  //   setState(() => _runOnUiIsolate = value);
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +134,10 @@ class _DineazyNotificationServicePanelState extends State<DineazyNotificationSer
                 duration: const Duration(milliseconds: 300),
                 child: status == ForegroundServiceStatus.loading
                     ? const Center(
-                        child: CircularProgressIndicator(),
+                        child: SizedBox.square(
+                          dimension: 28.0,
+                          child: CircularProgressIndicator(),
+                        ),
                       )
                     : PrimaryButton(
                         onTap: _onTap,

@@ -6,6 +6,7 @@ import 'package:image/image.dart' as img;
 import 'package:pos_printer_manager/models/pos_printer.dart';
 import 'package:pos_printer_manager/pos_printer_manager.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
+import 'package:provider/provider.dart';
 import 'package:redis/redis.dart';
 
 import '../db/message.table.dart';
@@ -15,6 +16,7 @@ import '../helpers/extensions.dart';
 import '../helpers/utils.dart';
 import '../modals/message_data.dart';
 import '../modals/print_data.dart';
+import '../providers/data_provider.dart';
 
 class RedisService {
   final String topic;
@@ -27,15 +29,39 @@ class RedisService {
 
   String get password => Environment.redisPassword;
 
-  Future<void> startListeningOnUiIsolate() => _startListeningOnTopic();
-
-  Future<void> stopListeningOnUiIsolate() async => _stopListeningOnTopic();
-
-  String get type {
-    if (topic.contains("dineazy")) {
-      return "dineazy";
+  Future<void> listenToTopic(BuildContext context) async {
+    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
+    if (dataProvider.isBackgroundServiceMode) {
+      return _startListeningToTopicHeadless();
     }
-    return "eazypms";
+
+    Stream<bool> stream = _startListeningOnTopic();
+    await for (bool val in stream) {
+      if (val) return;
+    }
+  }
+
+  Future<void> stopListeningToTopic(BuildContext context) {
+    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
+    if (dataProvider.isBackgroundServiceMode) {
+      return _stopListeningToTopicHeadless();
+    }
+
+    return _stopListeningOnTopic();
+  }
+
+  Future<void> _startListeningToTopicHeadless() async {
+    //  check if foreground notification is running
+    //  send topic through MethodChannel
+    //
+    throw "Unimplemented for background";
+  }
+
+  Future<void> _stopListeningToTopicHeadless() async {
+    //  check if foreground notification is running
+    //  send topic through MethodChannel
+    //
+    throw "Unimplemented for background";
   }
 
   Future<void> _stopListeningOnTopic() async {
@@ -46,7 +72,7 @@ class RedisService {
     debugPrint("RedisService._stopListeningOnTopic: ✅Unsubscribed successfully");
   }
 
-  Future<void> _startListeningOnTopic() async {
+  Stream<bool> _startListeningOnTopic() async* {
     final cmd = await RedisConnection().connect(host, port);
     await cmd.send_object(['AUTH', password]);
     final pubSub = PubSub(cmd);
@@ -59,6 +85,7 @@ class RedisService {
 
       if (messageData.type == "subscribe" && messageData.data == 1) {
         debugPrint("RedisService._startListeningOnTopic: ✅Subscribed successfully");
+        yield true;
         continue;
       }
 
@@ -80,8 +107,7 @@ class RedisService {
   static Future<void> dispatchPrint(PrintMessageData printMessageData) async {
     POSPrinter? printer = await PrinterTable().getPrinterByName(printMessageData.data.printer.value);
     if (printer == null) {
-      debugPrint(
-          "RedisService.dispatchPrint: ❌ERROR: Expected Printer(${printMessageData.data.printer.value}) was not found");
+      debugPrint("RedisService.dispatchPrint: ❌ERROR: Printer(${printMessageData.data.printer.value}) not found");
       return;
     }
 
