@@ -1,7 +1,6 @@
 package com.jerin.prnt
 
 import android.app.Notification
-import android.app.Notification.FOREGROUND_SERVICE_IMMEDIATE
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
@@ -56,11 +55,11 @@ class ForegroundService : Service() {
                 setContentTitle("Print service Running")
                 setContentText("Tap to manage")
                 setContentIntent(pendingIntent)
-                setSmallIcon(android.R.drawable.ic_menu_info_details)
+                setSmallIcon(R.drawable.ic_notification)
                 setOnlyAlertOnce(true)
                 setOngoing(true)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    foregroundServiceBehavior = FOREGROUND_SERVICE_IMMEDIATE
+                    foregroundServiceBehavior = NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE
                 }
                 return build()
             }
@@ -70,7 +69,6 @@ class ForegroundService : Service() {
         Log.d(TAG, "onStartCommand: ")
 
         startForeground(NOTIFICATION_ID, notification)
-
         ForegroundDispatcher(this).dispatch()
         instance = this
 
@@ -78,6 +76,7 @@ class ForegroundService : Service() {
     }
 
     override fun onDestroy() {
+        Log.d(TAG, "onDestroy: ")
         super.onDestroy()
         instance = null
     }

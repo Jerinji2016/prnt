@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:pos_printer_manager/models/pos_printer.dart';
 import 'package:pos_printer_manager/pos_printer_manager.dart';
@@ -13,6 +15,7 @@ import '../db/message.table.dart';
 import '../db/printer.table.dart';
 import '../helpers/environment.dart';
 import '../helpers/extensions.dart';
+import '../helpers/globals.dart';
 import '../helpers/utils.dart';
 import '../modals/message_data.dart';
 import '../modals/print_data.dart';
@@ -44,7 +47,7 @@ class RedisService {
   Future<void> listenToTopic(BuildContext context) async {
     DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
     if (dataProvider.isBackgroundServiceMode) {
-      return _startListeningToTopicHeadless();
+      return _startListeningToTopicHeadless(context);
     }
 
     Stream<bool> stream = _startListeningOnTopic();
@@ -62,18 +65,15 @@ class RedisService {
     return _stopListeningOnTopic();
   }
 
-  Future<void> _startListeningToTopicHeadless() async {
-    //  check if foreground notification is running
-    //  send topic through MethodChannel
-    //
-    throw "Unimplemented for background";
+  Future<void> _startListeningToTopicHeadless(BuildContext context) async {
+    await HeadlessService.initialize(context);
+    debugPrint("RedisService._startListeningToTopicHeadless: 🐞Foreground service initialized");
   }
 
   Future<void> _stopListeningToTopicHeadless() async {
     //  check if foreground notification is running
     //  send topic through MethodChannel
-    //
-    throw "Unimplemented for background";
+    stopForegroundService();
   }
 
   Future<void> _stopListeningOnTopic() async {

@@ -5,14 +5,19 @@ import android.util.Log
 import io.flutter.FlutterInjector
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.dart.DartExecutor
+import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugins.GeneratedPluginRegistrant
 import io.flutter.view.FlutterCallbackInformation
 import java.util.concurrent.Executors
 
-class ForegroundDispatcher(private val context: Context) {
+class ForegroundDispatcher(private val context: Context) : MethodChannel.MethodCallHandler{
     companion object {
         private const val TAG = "ForegroundDispatcher"
 
         private const val CALLBACK_METHOD_KEY = "fg-callback-method-key"
+
+        private const val CHANNEL_NAME = "com.jerin.prnt/headless"
 
         fun register(context: Context, callbackId: Long) {
             Executors.newCachedThreadPool().execute(
@@ -36,6 +41,8 @@ class ForegroundDispatcher(private val context: Context) {
 
         flutterEngine?.let {
             AppChannel.registerChannel(context, it)
+            GeneratedPluginRegistrant.registerWith(it)
+            MethodChannel(it.dartExecutor.binaryMessenger, CHANNEL_NAME).setMethodCallHandler(this)
 
             val sharedPreferences = context.getSharedPreferences(TAG, Context.MODE_PRIVATE)
             val dartForegroundCallbackId = sharedPreferences.getLong(CALLBACK_METHOD_KEY, -1L)
@@ -69,5 +76,10 @@ class ForegroundDispatcher(private val context: Context) {
 
             Log.d(TAG, "run: ✅ Registered headless callbacks [$dartForegroundMethodId]")
         }
+    }
+
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        Log.d(TAG, "onMethodCall: ${call.method}")
+
     }
 }
