@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../ui.bottom_sheet/settings/settings.dart';
 import '../messages/messages.dart';
-import '../settings/settings.dart';
 import '../setup_printers/setup_printers.dart';
 
 class HomeViewModal extends ChangeNotifier {

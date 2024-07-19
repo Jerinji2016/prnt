@@ -5,75 +5,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 // ignore: depend_on_referenced_packages
 import 'package:shared_preferences_android/shared_preferences_android.dart';
 
 import '../db/db.dart';
 import '../helpers/globals.dart';
 import '../helpers/utils.dart';
-import '../widgets/primary_button.dart';
-
-class NotificationPermissionDelegate extends StatelessWidget {
-  const NotificationPermissionDelegate._();
-
-  static Future<bool?> show(BuildContext context) => showModalBottomSheet<bool?>(
-        context: context,
-        isScrollControlled: true,
-        builder: (context) => BottomSheet(
-          onClosing: () {},
-          builder: (context) {
-            return const NotificationPermissionDelegate._();
-          },
-        ),
-      );
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Notification Permission",
-            style: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: Divider(),
-          ),
-          const Text(
-            "This app requires notification permissions to start your printer service.\n\n"
-            "Please tap on \"Allow\" if you wish to run your printer service in background.\n\n"
-            "Alternatively, you can run this service in foreground by changing it in settings "
-            "although this is not recommended.",
-          ),
-          const SizedBox(height: 24.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              PrimaryButton(
-                text: "Deny",
-                padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
-                color: Colors.red.shade700,
-                onTap: () => Navigator.pop(context, false),
-              ),
-              PrimaryButton(
-                padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
-                text: "Allow",
-                onTap: () => Navigator.pop(context, true),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
+import '../ui.bottom_sheet/notification_permission_rationale.dart';
 
 class HeadlessService {
   HeadlessService._();
@@ -102,7 +41,7 @@ class HeadlessService {
 
     const permissionErrorMessage = "Please provide notification permissions to start service";
     if (shouldShowRationale) {
-      bool? confirm = await NotificationPermissionDelegate.show(context);
+      bool? confirm = await NotificationPermissionRationale.show(context);
       if (!(confirm ?? false)) {
         throw permissionErrorMessage;
       }
