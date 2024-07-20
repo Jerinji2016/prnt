@@ -11,13 +11,11 @@ import io.flutter.plugins.GeneratedPluginRegistrant
 import io.flutter.view.FlutterCallbackInformation
 import java.util.concurrent.Executors
 
-class ForegroundDispatcher(private val context: Context) : MethodChannel.MethodCallHandler{
+class ForegroundDispatcher(private val context: Context) {
     companion object {
         private const val TAG = "ForegroundDispatcher"
 
         private const val CALLBACK_METHOD_KEY = "fg-callback-method-key"
-
-        private const val CHANNEL_NAME = "com.jerin.prnt/headless"
 
         fun register(context: Context, callbackId: Long) {
             Executors.newCachedThreadPool().execute(
@@ -76,10 +74,5 @@ class ForegroundDispatcher(private val context: Context) : MethodChannel.MethodC
 
             Log.d(TAG, "run: ✅ Registered headless callbacks [$dartForegroundMethodId]")
         }
-    }
-
-    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        Log.d(TAG, "onMethodCall: ${call.method}")
-
     }
 }
