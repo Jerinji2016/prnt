@@ -27,17 +27,11 @@ class RedisService {
   String get password => Environment.redisPassword;
 
   Future<void> startListeningOnTopic(String topic) async {
-    Stream<bool> stream = _startListeningOnTopic(topic);
-    await for (bool value in stream) {
-      if (value) {
-        return;
-      } else {
-        throw "Failed to subscribe";
-      }
-    }
+    _startListeningOnTopic(topic);
+    await Future.delayed(const Duration(milliseconds: 300));
   }
 
-  Stream<bool> _startListeningOnTopic(String topic) async* {
+  void _startListeningOnTopic(String topic) async {
     final cmd = await RedisConnection().connect(host, port);
     await cmd.send_object(['AUTH', password]);
     final pubSub = PubSub(cmd);
@@ -49,8 +43,7 @@ class RedisService {
       MessageData messageData = MessageData.fromMessageList(msg);
 
       if (messageData.type == "subscribe" && messageData.data == 1) {
-        debugPrint("RedisService._startListeningOnTopic: ✅Subscribed successfully");
-        yield true;
+        debugPrint("RedisService._startListeningOnTopic: ✅Subscribed successfully ($topic)");
         continue;
       }
 
@@ -73,7 +66,7 @@ class RedisService {
     await cmd.send_object(['AUTH', password]);
     final pubSub = PubSub(cmd);
     pubSub.unsubscribe([topic]);
-    debugPrint("RedisService._stopListeningOnTopic: ✅Unsubscribed successfully");
+    debugPrint("RedisService._stopListeningOnTopic: ✅Unsubscribed successfully ($topic)");
   }
 
   static Future<void> dispatchPrint(PrintMessageData printMessageData) async {
