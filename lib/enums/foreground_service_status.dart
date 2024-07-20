@@ -26,4 +26,6 @@ enum ForegroundServiceStatus {
     required this.icon,
     required this.iconColor,
   });
+
+  static ForegroundServiceStatus fromIndex(int index) => ForegroundServiceStatus.values.elementAt(index);
 }
