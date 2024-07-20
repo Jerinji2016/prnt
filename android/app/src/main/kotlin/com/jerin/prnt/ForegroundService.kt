@@ -41,6 +41,8 @@ class ForegroundService : Service() {
             }
     }
 
+    private var foregroundDispatcher: ForegroundDispatcher = ForegroundDispatcher(this)
+
     private val notification: Notification
         get() {
             val newIntent = Intent(this, MainActivity::class.java)
@@ -69,7 +71,7 @@ class ForegroundService : Service() {
         Log.d(TAG, "onStartCommand: ")
 
         startForeground(NOTIFICATION_ID, notification)
-        ForegroundDispatcher(this).dispatch()
+        foregroundDispatcher.dispatch()
         instance = this
 
         return START_NOT_STICKY
@@ -78,6 +80,7 @@ class ForegroundService : Service() {
     override fun onDestroy() {
         Log.d(TAG, "onDestroy: ")
         super.onDestroy()
+        foregroundDispatcher.destroy()
         instance = null
     }
 
