@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../enums/foreground_service_status.dart';
-import '../../../helpers/utils.dart';
 import '../../../modals/profile/eazypms.profile.dart';
 import '../../../providers/data_provider.dart';
-import '../../../service/redis_service.dart';
 import '../../../widgets/primary_button.dart';
+import '../home.vm.dart';
 
 class EazypmsNotificationServicePanel extends StatelessWidget {
   const EazypmsNotificationServicePanel({super.key});
@@ -44,44 +43,17 @@ class RevenueCenterServiceTile extends StatefulWidget {
 }
 
 class _RevenueCenterServiceTileState extends State<RevenueCenterServiceTile> {
-  ForegroundServiceStatus status = ForegroundServiceStatus.stopped;
+  String get topic => widget.revenueCenter.redisTopic;
 
   void _onTap() async {
-    String topic = widget.revenueCenter.redisTopic;
-    bool isServiceRunning = status == ForegroundServiceStatus.running;
-
-    setState(() => status = ForegroundServiceStatus.loading);
-    ForegroundServiceStatus nextStatus;
-
-    try {
-      RedisService redisService = RedisService(topic);
-      String toastMessage;
-      if (!isServiceRunning) {
-        await redisService.listenToTopic(context);
-
-        nextStatus = ForegroundServiceStatus.running;
-        toastMessage = "Subscribed successfully";
-      } else {
-        await redisService.stopListeningToTopic(context);
-        nextStatus = ForegroundServiceStatus.stopped;
-        toastMessage = "Unsubscribed successfully";
-      }
-
-      await Future.delayed(const Duration(seconds: 1));
-      setState(() => status = nextStatus);
-      if (mounted) {
-        showToast(context, toastMessage, color: Colors.green);
-      }
-    } catch (e) {
-      debugPrint("_RevenueCenterServiceTileState._onTap: ❌ERROR: $e");
-      setState(() => status = ForegroundServiceStatus.stopped);
-      if (mounted) {
-        showToast(context, e.toString(), color: Colors.red);
-      }
-    }
+    HomeViewModal viewModal = Provider.of<HomeViewModal>(context, listen: false);
+    viewModal.toggleTopicListeningStatus(context, topic);
   }
 
   Widget _buildStatusText() {
+    HomeViewModal viewModal = Provider.of<HomeViewModal>(context);
+    ForegroundServiceStatus status = viewModal.getTopicStatus(context, topic);
+
     return Row(
       children: [
         Text(
@@ -105,6 +77,8 @@ class _RevenueCenterServiceTileState extends State<RevenueCenterServiceTile> {
 
   @override
   Widget build(BuildContext context) {
+    HomeViewModal viewModal = Provider.of<HomeViewModal>(context);
+    ForegroundServiceStatus status = viewModal.getTopicStatus(context, topic);
     bool isServiceStopped = status == ForegroundServiceStatus.stopped;
 
     return Padding(

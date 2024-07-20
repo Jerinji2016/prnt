@@ -12,7 +12,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => HomeViewModal(),
+      create: (context) => HomeViewModal(context),
       builder: (context, child) {
         HomeViewModal viewModal = Provider.of<HomeViewModal>(context, listen: false);
 

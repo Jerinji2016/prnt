@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../enums/foreground_service_status.dart';
-import '../../../helpers/utils.dart';
 import '../../../providers/data_provider.dart';
-import '../../../service/redis_service.dart';
 import '../../../widgets/primary_button.dart';
+import '../home.vm.dart';
 
 class DineazyNotificationServicePanel extends StatefulWidget {
   const DineazyNotificationServicePanel({super.key});
@@ -15,60 +14,25 @@ class DineazyNotificationServicePanel extends StatefulWidget {
 }
 
 class _DineazyNotificationServicePanelState extends State<DineazyNotificationServicePanel> {
-  ForegroundServiceStatus status = ForegroundServiceStatus.stopped;
+  late String topic;
 
   @override
   void initState() {
     super.initState();
-    _loadServiceStatus();
-  }
 
-  void _loadServiceStatus() async {
-    bool isServiceRunning = await isForegroundServiceRunning();
-    setState(() {
-      status = isServiceRunning ? ForegroundServiceStatus.running : ForegroundServiceStatus.stopped;
-    });
+    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
+    topic = dataProvider.dineazyProfile.redisTopic;
   }
 
   void _onTap() async {
-    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
-    String topic = dataProvider.dineazyProfile.redisTopic;
-
-    bool isServiceRunning = status == ForegroundServiceStatus.running;
-
-    setState(() => status = ForegroundServiceStatus.loading);
-    ForegroundServiceStatus nextStatus;
-
-    try {
-      RedisService redisService = RedisService(topic);
-      String toastMessage;
-      if (!isServiceRunning) {
-        await redisService.listenToTopic(context);
-
-        nextStatus = ForegroundServiceStatus.running;
-        toastMessage = "Subscribed successfully";
-      } else {
-        await redisService.stopListeningToTopic(context);
-        nextStatus = ForegroundServiceStatus.stopped;
-        toastMessage = "Unsubscribed successfully";
-      }
-
-      await Future.delayed(const Duration(seconds: 1));
-      setState(() => status = nextStatus);
-      if (mounted) {
-        showToast(context, toastMessage, color: Colors.green);
-      }
-    } catch (e) {
-      debugPrint("_DineazyNotificationServicePanelState._onTap: ❌ERROR: $e");
-      setState(() => status = ForegroundServiceStatus.stopped);
-      if (mounted) {
-        showToast(context, e.toString(), color: Colors.red);
-      }
-    }
+    HomeViewModal viewModal = Provider.of<HomeViewModal>(context, listen: false);
+    viewModal.toggleTopicListeningStatus(context, topic);
   }
 
   @override
   Widget build(BuildContext context) {
+    HomeViewModal viewModal = Provider.of<HomeViewModal>(context);
+    ForegroundServiceStatus status = viewModal.getTopicStatus(context, topic);
     bool isServiceStopped = status == ForegroundServiceStatus.stopped;
 
     return Material(

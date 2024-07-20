@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
 
@@ -8,35 +7,18 @@ import 'package:image/image.dart' as img;
 import 'package:pos_printer_manager/models/pos_printer.dart';
 import 'package:pos_printer_manager/pos_printer_manager.dart';
 import 'package:pos_printer_manager/services/printer_manager.dart';
-import 'package:provider/provider.dart';
 import 'package:redis/redis.dart';
 
 import '../db/message.table.dart';
 import '../db/printer.table.dart';
 import '../helpers/environment.dart';
 import '../helpers/extensions.dart';
-import '../helpers/globals.dart';
 import '../helpers/utils.dart';
 import '../modals/message_data.dart';
 import '../modals/print_data.dart';
-import '../providers/data_provider.dart';
-import 'headless_service.dart';
-
-const _foregroundTopicsKey = "foreground-topics";
-const _backgroundTopicKey = "background_topics";
 
 class RedisService {
-  final String topic;
-
-  RedisService(this.topic);
-
-  static List<String> listeningTopics(BuildContext context) {
-    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
-    String key = dataProvider.isForegroundServiceMode ? _foregroundTopicsKey : _backgroundTopicKey;
-    String? topicsString = sharedPreferences.getString(key);
-    if (topicsString == null) return [];
-    return jsonDecode(topicsString);
-  }
+  RedisService();
 
   String get host => Environment.redisHost;
 
@@ -44,47 +26,18 @@ class RedisService {
 
   String get password => Environment.redisPassword;
 
-  Future<void> listenToTopic(BuildContext context) async {
-    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
-    if (dataProvider.isBackgroundServiceMode) {
-      return _startListeningToTopicHeadless(context);
+  Future<void> startListeningOnTopic(String topic) async {
+    Stream<bool> stream = _startListeningOnTopic(topic);
+    await for (bool value in stream) {
+      if (value) {
+        return;
+      } else {
+        throw "Failed to subscribe";
+      }
     }
-
-    Stream<bool> stream = _startListeningOnTopic();
-    await for (bool val in stream) {
-      if (val) return;
-    }
   }
 
-  Future<void> stopListeningToTopic(BuildContext context) {
-    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
-    if (dataProvider.isBackgroundServiceMode) {
-      return _stopListeningToTopicHeadless();
-    }
-
-    return _stopListeningOnTopic();
-  }
-
-  Future<void> _startListeningToTopicHeadless(BuildContext context) async {
-    await HeadlessService.initialize(context);
-    debugPrint("RedisService._startListeningToTopicHeadless: 🐞Foreground service initialized");
-  }
-
-  Future<void> _stopListeningToTopicHeadless() async {
-    //  check if foreground notification is running
-    //  send topic through MethodChannel
-    stopForegroundService();
-  }
-
-  Future<void> _stopListeningOnTopic() async {
-    final cmd = await RedisConnection().connect(host, port);
-    await cmd.send_object(['AUTH', password]);
-    final pubSub = PubSub(cmd);
-    pubSub.unsubscribe([topic]);
-    debugPrint("RedisService._stopListeningOnTopic: ✅Unsubscribed successfully");
-  }
-
-  Stream<bool> _startListeningOnTopic() async* {
+  Stream<bool> _startListeningOnTopic(String topic) async* {
     final cmd = await RedisConnection().connect(host, port);
     await cmd.send_object(['AUTH', password]);
     final pubSub = PubSub(cmd);
@@ -112,8 +65,15 @@ class RedisService {
         continue;
       }
     }
-
     debugPrint("RedisService._startListeningOnTopic: 🐞finishing connection...");
+  }
+
+  Future<void> stopListeningOnTopic(String topic) async {
+    final cmd = await RedisConnection().connect(host, port);
+    await cmd.send_object(['AUTH', password]);
+    final pubSub = PubSub(cmd);
+    pubSub.unsubscribe([topic]);
+    debugPrint("RedisService._stopListeningOnTopic: ✅Unsubscribed successfully");
   }
 
   static Future<void> dispatchPrint(PrintMessageData printMessageData) async {
