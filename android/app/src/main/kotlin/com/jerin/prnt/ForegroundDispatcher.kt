@@ -5,8 +5,6 @@ import android.util.Log
 import io.flutter.FlutterInjector
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.dart.DartExecutor
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 import io.flutter.view.FlutterCallbackInformation
 import java.util.concurrent.Executors
@@ -57,6 +55,12 @@ class ForegroundDispatcher(private val context: Context) {
             val dartCallback = DartExecutor.DartCallback(assets, appBundlePath, callbackInfo)
             it.dartExecutor.executeDartCallback(dartCallback)
         }
+    }
+
+    fun destroy() {
+        Log.d(TAG, "destroy: Destroy Flutter Engine")
+        flutterEngine?.destroy()
+        flutterEngine = null
     }
 
     class RegisterCallbackTask(
