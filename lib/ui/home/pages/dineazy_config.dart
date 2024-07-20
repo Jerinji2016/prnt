@@ -29,12 +29,6 @@ class DineazyConfigPage extends StatelessWidget implements LoginInterface, Logou
 
       loadingMessage.value = "Fetching Profile...";
       DineazyProfile profile = await dineazyApiService.getProfile(token);
-      // loadingMessage.value = "Fetching Restaurant...";
-      // Restaurant restaurant = await dineazyApiService.getRestaurant(
-      //   token,
-      //   profile.companyId,
-      //   profile.revenueCenterId,
-      // );
 
       if (context.mounted) {
         showToast(context, "✅ Authentication Successful", color: Colors.green);
