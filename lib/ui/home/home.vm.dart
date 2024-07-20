@@ -53,6 +53,7 @@ class HomeViewModal extends ChangeNotifier {
   }
 
   void _listenOnForeground(BuildContext context, String topic) async {
+    debugPrint("HomeViewModal._listenOnForeground: 🐞======== FOREGROUND ========");
     bool isListeningToTopic = getTopicStatus(context, topic) == ForegroundServiceStatus.running;
     _updateStatus(topic, ForegroundServiceStatus.loading);
 
@@ -83,6 +84,7 @@ class HomeViewModal extends ChangeNotifier {
   }
 
   void _listenOnBackground(BuildContext context, String topic) async {
+    debugPrint("HomeViewModal._listenOnForeground: 🐞======== BACKGROUND ========");
     DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
     bool isListeningToTopic = getTopicStatus(context, topic) == ForegroundServiceStatus.running;
     bool isNotificationServiceRunning = await isForegroundServiceRunning();
