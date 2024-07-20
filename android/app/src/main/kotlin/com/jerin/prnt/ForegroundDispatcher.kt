@@ -40,7 +40,6 @@ class ForegroundDispatcher(private val context: Context) {
         flutterEngine?.let {
             AppChannel.registerChannel(context, it)
             GeneratedPluginRegistrant.registerWith(it)
-            MethodChannel(it.dartExecutor.binaryMessenger, CHANNEL_NAME).setMethodCallHandler(this)
 
             val sharedPreferences = context.getSharedPreferences(TAG, Context.MODE_PRIVATE)
             val dartForegroundCallbackId = sharedPreferences.getLong(CALLBACK_METHOD_KEY, -1L)
