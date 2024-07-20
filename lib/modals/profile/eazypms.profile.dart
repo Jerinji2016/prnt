@@ -1,3 +1,4 @@
+import '../../helpers/environment.dart';
 import '../base_modal.dart';
 
 class EazypmsProfile extends BaseModal {
@@ -27,5 +28,5 @@ class EazypmsRevenueCenter extends BaseModal {
 
   String get objectType => json["objectType"];
 
-  String get redisTopic => "qa_eazypms_${id}_kot";
+  String get redisTopic => "${Environment.value}_eazypms_${id}_kot";
 }

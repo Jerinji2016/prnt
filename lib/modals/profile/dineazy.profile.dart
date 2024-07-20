@@ -1,3 +1,4 @@
+import '../../helpers/environment.dart';
 import '../base_modal.dart';
 
 class DineazyProfile extends BaseModal {
@@ -22,7 +23,7 @@ class DineazyProfile extends BaseModal {
 
   String get phone => json["phone"];
 
-  String get redisTopic => "prod_dineazy_${revenueCenter.id}_kot";
+  String get redisTopic => "${Environment.value}_dineazy_${revenueCenter.id}_kot";
 }
 
 class DineazyRevenueCenter extends BaseModal {
