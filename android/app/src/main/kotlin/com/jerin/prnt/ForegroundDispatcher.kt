@@ -25,7 +25,9 @@ class ForegroundDispatcher(private val context: Context) {
     private var flutterEngine: FlutterEngine? = null
 
     fun dispatch() {
-        flutterEngine = FlutterEngine(context)
+        flutterEngine = FlutterEngine(context, null, false)
+
+        Log.d("JERIN", "dispatch: Headless Engine: $flutterEngine")
 
         val flutterLoader = FlutterInjector.instance().flutterLoader()
         if (!flutterLoader.initialized()) {
@@ -37,7 +39,7 @@ class ForegroundDispatcher(private val context: Context) {
 
         flutterEngine?.let {
             AppChannel.registerChannel(context, it)
-            GeneratedPluginRegistrant.registerWith(it)
+            GeneratedPluginRegister.registerGeneratedPlugins(it)
 
             val sharedPreferences = context.getSharedPreferences(TAG, Context.MODE_PRIVATE)
             val dartForegroundCallbackId = sharedPreferences.getLong(CALLBACK_METHOD_KEY, -1L)

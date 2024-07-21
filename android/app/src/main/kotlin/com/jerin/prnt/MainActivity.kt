@@ -7,6 +7,7 @@ import io.flutter.embedding.engine.FlutterEngine
 
 class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        Log.d("JERIN", "configureFlutterEngine: Main Engine: $flutterEngine")
         AppChannel.registerChannel(applicationContext, flutterEngine)
         super.configureFlutterEngine(flutterEngine)
     }
