@@ -1,13 +1,19 @@
+import 'dart:isolate';
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
 
 import '../../db/message.table.dart';
+import '../../helpers/globals.dart';
 import '../../helpers/types.dart';
 import '../../helpers/utils.dart';
 import '../../modals/message_data.dart';
 import '../../modals/print_message_data.dart';
+import '../../providers/data_provider.dart';
+import '../../service/redis_service.dart';
 import '../../widgets/primary_button.dart';
 
 class MessagesScreen extends StatefulWidget {
@@ -122,7 +128,15 @@ class _MessageTileState extends State<MessageTile> {
   void _onPrintTapped(PrintMessageData message) async {
     setState(() => _isPrintLoading = true);
 
-    await RedisService.dispatchPrint(message);
+    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
+    if (dataProvider.isBackgroundServiceMode && await isForegroundServiceRunning()) {
+      debugPrint("_MessageTileState._onPrintTapped: 🐞Dispatch print in background");
+      SendPort? port = IsolateNameServer.lookupPortByName(headlessPortName);
+      port?.send(['print', widget.record.id]);
+    } else {
+      debugPrint("_MessageTileState._onPrintTapped: 🐞Dispatch print in foreground");
+      RedisService.dispatchPrint(message);
+    }
 
     setState(() => _isPrintLoading = true);
     if (mounted) {

@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_android/shared_preferences_android.dart';
 import '../../db/db.dart';
+import '../../db/message.table.dart';
 import '../../helpers/globals.dart';
 import '../../helpers/utils.dart';
+import '../../modals/message_data.dart';
 import '../redis_service.dart';
 
 Future<void> registerHeadlessEntry() async {
@@ -31,6 +33,14 @@ void _onData(dynamic data) async {
   if (data[0] == "remove-port") {
     IsolateNameServer.removePortNameMapping(headlessPortName);
     headlessReceivePort.close();
+    return;
+  }
+
+  if (data[0] == "print") {
+    int id = data[1];
+    MessageTable messageTable = MessageTable();
+    MessageRecord record = await messageTable.getById(id);
+    RedisService.dispatchPrint(record.data);
     return;
   }
 

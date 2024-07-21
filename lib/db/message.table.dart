@@ -31,6 +31,12 @@ class MessageTable {
     return messages;
   }
 
+  Future<MessageRecord> getById(int id) async {
+    final cursor = await _db.query(tableName, where: "${MessageTable.id}=?", whereArgs: [id.toString()]);
+    MessageRecord record = MessageRecord.fromJson(cursor.first);
+    return record;
+  }
+
   Future<void> add(PrintMessageData printMessageData) => _db.insert(tableName, {
         type: printMessageData.type,
         channel: printMessageData.channel,
