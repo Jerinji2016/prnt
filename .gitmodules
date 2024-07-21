@@ -4,3 +4,6 @@
 [submodule "packages/flutter_usb_printer"]
 	path = packages/flutter_usb_printer
 	url = https://github.com/Jerinji2016/flutter_usb_printer.git
+[submodule "packages/blue_thermal_printer"]
+	path = packages/blue_thermal_printer
+	url = https://github.com/Jerinji2016/blue_thermal_printer.git
