@@ -1,16 +1,20 @@
 # prnt
 
-A new Flutter project.
+prnt is a flutter application to listen to a redis server for print notifications from Dineazy, EazyPMS
+which if forwarded to POS printer connected to this application.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+prnt app has custom implementation for printer packages such as `pos_printer_manager` and `blue_thermal_printer`.  
+These packages are added to the project as git submodules.
 
-A few resources to get you started if this is your first Flutter project:
+To know more on git submodules, refer [this video](https://www.youtube.com/watch?v=gSlXo2iLBro).  
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+After cloning the repo from a git, its important to explicitly fetch all submodule dependencies. For
+doing the same run:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```shell
+  git submodule update --init
+```
+
+> Note: Packages are better maintaining public in github since its easy to sync with the actual remote fork.
