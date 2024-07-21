@@ -1,3 +1,6 @@
 [submodule "packages/pos_printer_manager"]
 	path = packages/pos_printer_manager
 	url = https://github.com/Jerinji2016/pos_printer_manager.git
+[submodule "packages/flutter_usb_printer"]
+	path = packages/flutter_usb_printer
+	url = https://github.com/Jerinji2016/flutter_usb_printer.git
