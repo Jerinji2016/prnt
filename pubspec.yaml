@@ -12,10 +12,7 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   pos_printer_manager:
-#    path: ../packages/pos_printer_manager
-    git:
-      url: https://github.com/Jerinji2016/pos_printer_manager.git
-      ref: support_prnt_app
+    path: packages/pos_printer_manager
 
   shared_preferences: ^2.2.2
   shared_preferences_android: ^2.2.3
