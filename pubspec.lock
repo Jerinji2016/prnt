@@ -174,11 +174,9 @@ packages:
   flutter_usb_printer:
     dependency: transitive
     description:
-      path: "."
-      ref: null_exception_handling
-      resolved-ref: "0e008d98283b45721919839a1185792c7e465144"
-      url: "https://github.com/Jerinji2016/flutter_usb_printer.git"
-    source: git
+      path: "packages/flutter_usb_printer"
+      relative: true
+    source: path
     version: "0.1.0+1"
   flutter_web_plugins:
     dependency: transitive
@@ -444,11 +442,9 @@ packages:
   pos_printer_manager:
     dependency: "direct main"
     description:
-      path: "."
-      ref: support_prnt_app
-      resolved-ref: "8942e54486ff2b3d2983712e574b237a2d68ea7c"
-      url: "https://github.com/Jerinji2016/pos_printer_manager.git"
-    source: git
+      path: "packages/pos_printer_manager"
+      relative: true
+    source: path
     version: "0.0.5"
   printing:
     dependency: transitive
