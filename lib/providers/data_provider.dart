@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../enums/foreground_service_status.dart';
 import '../enums/service_mode.dart';
 import '../helpers/globals.dart';
+import '../helpers/utils.dart';
 import '../modals/profile/dineazy.profile.dart';
 import '../modals/profile/eazypms.profile.dart';
 
@@ -43,6 +44,14 @@ class DataProvider extends ChangeNotifier {
         status = ForegroundServiceStatus.stopped;
       }
       _listeningTopics[key] = status;
+    });
+
+    isForegroundServiceRunning().then((value){
+      if(!value) {
+        sharedPreferences.remove(_listeningTopicsKey);
+        _listeningTopics.clear();
+        notifyListeners();
+      }
     });
   }
 
