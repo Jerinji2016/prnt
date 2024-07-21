@@ -14,7 +14,7 @@ After cloning the repo from a git, its important to explicitly fetch all submodu
 doing the same run:
 
 ```shell
-  git submodule update --init
+  git submodule update --init --recursive
 ```
 
 > Note: Packages are better maintaining public in github since its easy to sync with the actual remote fork.
