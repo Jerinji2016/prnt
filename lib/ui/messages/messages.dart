@@ -7,8 +7,7 @@ import '../../db/message.table.dart';
 import '../../helpers/types.dart';
 import '../../helpers/utils.dart';
 import '../../modals/message_data.dart';
-import '../../modals/print_data.dart';
-import '../../service/redis_service.dart';
+import '../../modals/print_message_data.dart';
 import '../../widgets/primary_button.dart';
 
 class MessagesScreen extends StatefulWidget {
@@ -64,7 +63,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
             return const Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: [CircularProgressIndicator(), SizedBox(height: 10.0), Text("Loading messages...")],
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 10.0),
+                  Text("Loading messages..."),
+                ],
               ),
             );
           }

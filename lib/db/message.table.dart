@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 
 import '../helpers/types.dart';
 import '../modals/message_data.dart';
-import '../modals/print_data.dart';
+import '../modals/print_message_data.dart';
 import 'db.dart';
 
 class MessageTable {

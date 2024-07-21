@@ -1,5 +1,5 @@
 import '../db/message.table.dart';
-import 'print_data.dart';
+import 'print_message_data.dart';
 
 class MessageData<T> {
   final String type;

@@ -15,7 +15,7 @@ import '../helpers/environment.dart';
 import '../helpers/extensions.dart';
 import '../helpers/utils.dart';
 import '../modals/message_data.dart';
-import '../modals/print_data.dart';
+import '../modals/print_message_data.dart';
 
 class RedisService {
   RedisService();
