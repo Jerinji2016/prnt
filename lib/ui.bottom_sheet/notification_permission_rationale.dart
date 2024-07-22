@@ -49,6 +49,7 @@ class NotificationPermissionRationale extends StatelessWidget {
                 text: "Deny",
                 padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
                 color: Colors.red.shade700,
+                textColor: Colors.white,
                 onTap: () => Navigator.pop(context, false),
               ),
               PrimaryButton(
