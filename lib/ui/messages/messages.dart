@@ -136,7 +136,8 @@ class _MessageTileState extends State<MessageTile> {
       RedisService.dispatchPrint(message);
     }
 
-    setState(() => _isPrintLoading = true);
+    await Future.delayed(const Duration(milliseconds: 300));
+    setState(() => _isPrintLoading = false);
     if (mounted) {
       showToast(context, "Print dispatched successfully");
     }
