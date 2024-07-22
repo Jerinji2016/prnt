@@ -17,6 +17,10 @@ class EazypmsCompany extends BaseModal {
   Iterable<EazypmsRevenueCenter> get revenueCenters => List.from(json["revenueCenters"] ?? []).map(
         (e) => EazypmsRevenueCenter(e),
       );
+
+  Iterable<EazypmsRevenueCenter> get nonPropertyRevenueCenters => revenueCenters.where(
+        (rvc) => !["Company", "Property"].contains(rvc.objectType),
+      );
 }
 
 class EazypmsRevenueCenter extends BaseModal {

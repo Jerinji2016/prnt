@@ -12,10 +12,21 @@ import '../../helpers/types.dart';
 import '../../helpers/utils.dart';
 import '../../modals/message_data.dart';
 import '../../modals/print_message_data.dart';
+import '../../modals/profile/eazypms.profile.dart';
 import '../../providers/data_provider.dart';
 import '../../service/redis_service.dart';
 import '../../widgets/primary_button.dart';
 import 'view_bill.bottom_sheet.dart';
+
+class MessageFilter {
+  final String label;
+  final bool Function(String topic) predicate;
+
+  MessageFilter({
+    required this.label,
+    required this.predicate,
+  });
+}
 
 class MessagesScreen extends StatefulWidget {
   const MessagesScreen({super.key});
@@ -28,15 +39,34 @@ class _MessagesScreenState extends State<MessagesScreen> {
   final MessageRecordList _messages = [];
   bool _isLoading = false;
 
+  final List<int> _selectedFilterIndex = [];
+
+  final List<MessageFilter> _filters = [];
+
+  MessageRecordList get _filteredMessages {
+    if (_selectedFilterIndex.isEmpty) return _messages;
+
+    List<MessageFilter> filters = _selectedFilterIndex.map((index) => _filters.elementAt(index)).toList();
+    MessageRecordList filteredMessages = [];
+    for (MessageRecord message in _messages) {
+      if (filters.any((filter) => filter.predicate(message.data.channel))) {
+        filteredMessages.add(message);
+      }
+    }
+    return filteredMessages;
+  }
+
   @override
   void initState() {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback(
       (timeStamp) => _loadMessages(),
     );
+
+    _loadFilters();
   }
 
-  void _loadMessages() async {
+  Future<void> _loadMessages() async {
     debugPrint("_MessagesScreenState._loadMessages: ");
     setState(() => _isLoading = true);
 
@@ -45,10 +75,87 @@ class _MessagesScreenState extends State<MessagesScreen> {
       ..clear()
       ..addAll(messages);
 
-    //  simply to get loading feeling
-    await Future.delayed(const Duration(milliseconds: 500));
-
+    await Future.delayed(const Duration(milliseconds: 300));
     setState(() => _isLoading = false);
+  }
+
+  void _loadFilters() {
+    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
+    if (dataProvider.hasDineazyProfile) {
+      final filter = MessageFilter(
+        label: "Dineazy",
+        predicate: (topic) => topic.contains("dineazy"),
+      );
+      _filters.add(filter);
+    }
+
+    if (dataProvider.hasEazypmsProfile) {
+      final filter = MessageFilter(
+        label: "eazyPMS",
+        predicate: (topic) => topic.contains("eazypms"),
+      );
+      _filters.add(filter);
+
+      for (EazypmsRevenueCenter revenueCenter in dataProvider.eazypmsProfile.company.nonPropertyRevenueCenters) {
+        final filter = MessageFilter(
+          label: revenueCenter.name,
+          predicate: (topic) => topic.contains("eazypms") && topic.contains(revenueCenter.id),
+        );
+        _filters.add(filter);
+      }
+    }
+  }
+
+  void _onFilterTapped(int index) => setState(() {
+        if (_selectedFilterIndex.contains(index)) {
+          _selectedFilterIndex.remove(index);
+        } else {
+          _selectedFilterIndex.add(index);
+        }
+      });
+
+  Widget _buildFilter() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 12.0, bottom: 6.0),
+      child: Wrap(
+        runSpacing: 8.0,
+        spacing: 12.0,
+        children: _filters.indexed.map<Widget>(
+          (record) {
+            int index = record.$1;
+            final filter = record.$2;
+
+            bool isSelected = _selectedFilterIndex.contains(index);
+            Color color = isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).disabledColor;
+
+            return Material(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0),
+                side: BorderSide(width: 1.5, color: color),
+              ),
+              child: InkWell(
+                onTap: () => _onFilterTapped(index),
+                borderRadius: BorderRadius.circular(16.0),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 4.0,
+                    horizontal: 8.0,
+                  ),
+                  child: Text(
+                    filter.label,
+                    style: TextStyle(
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ).toList(),
+      ),
+    );
   }
 
   @override
@@ -79,22 +186,40 @@ class _MessagesScreenState extends State<MessagesScreen> {
             );
           }
 
-          if (_messages.isEmpty) {
-            return const Center(
-              child: Text("No messages yet!"),
+          MessageRecordList messages = _filteredMessages;
+
+          if (messages.isEmpty) {
+            return Column(
+              children: [
+                _buildFilter(),
+                const Divider(),
+                const Expanded(
+                  child: Center(
+                    child: Text("No messages yet!"),
+                  ),
+                ),
+              ],
             );
           }
 
-          return ListView.builder(
-            itemBuilder: (context, index) {
-              MessageRecord message = _messages.elementAt(index);
+          return Column(
+            children: [
+              _buildFilter(),
+              const Divider(),
+              Expanded(
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    MessageRecord message = messages.elementAt(index);
 
-              return MessageTile(
-                index: index,
-                record: message,
-              );
-            },
-            itemCount: _messages.length,
+                    return MessageTile(
+                      index: index,
+                      record: message,
+                    );
+                  },
+                  itemCount: messages.length,
+                ),
+              ),
+            ],
           );
         },
       ),

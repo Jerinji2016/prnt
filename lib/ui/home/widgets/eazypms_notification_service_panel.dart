@@ -13,9 +13,7 @@ class EazypmsNotificationServicePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DataProvider dataProvider = Provider.of<DataProvider>(context);
-    final revenueCenters = dataProvider.eazypmsProfile.company.revenueCenters.where(
-      (rvc) => !["Company", "Property"].contains(rvc.objectType),
-    );
+    final revenueCenters = dataProvider.eazypmsProfile.company.nonPropertyRevenueCenters;
 
     return ListView.builder(
       itemCount: revenueCenters.length,
