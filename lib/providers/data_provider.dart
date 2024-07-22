@@ -72,7 +72,6 @@ class DataProvider extends ChangeNotifier {
       );
 
   Future<void> unregisterTopics(Iterable<String> topics) async {
-    debugPrint("DataProvider.unregisterTopics: 🐞$topics");
     if (isForegroundServiceMode) {
       RedisService redisService = RedisService();
       await Future.wait(
@@ -84,7 +83,6 @@ class DataProvider extends ChangeNotifier {
       );
     } else {
       SendPort? port = IsolateNameServer.lookupPortByName(headlessPortName);
-      debugPrint("DataProvider.unregisterTopics: 🐞${port?.nativePort}");
       for (String topic in topics) {
         port?.send([topic, "unsubscribe"]);
       }
