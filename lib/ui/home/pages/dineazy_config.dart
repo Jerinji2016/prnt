@@ -50,6 +50,11 @@ class DineazyConfigPage extends StatelessWidget implements LoginInterface, Logou
     DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
     bool? confirm = await ConfirmLogout.show(context, "Dineazy");
     if (!(confirm ?? false)) return;
+
+    Iterable<String> listeningTopics = dataProvider.getListeningTopicsOfProduct("dineazy");
+    if (listeningTopics.isNotEmpty) {
+      await dataProvider.unregisterTopics(listeningTopics);
+    }
     dataProvider.logoutOfDineazy();
   }
 

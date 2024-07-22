@@ -50,6 +50,11 @@ class EazyPMSConfigPage extends StatelessWidget implements LoginInterface, Logou
     DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
     bool? confirm = await ConfirmLogout.show(context, "eazyPMS");
     if (!(confirm ?? false)) return;
+
+    Iterable<String> listeningTopics = dataProvider.getListeningTopicsOfProduct("eazypms");
+    if (listeningTopics.isNotEmpty) {
+      await dataProvider.unregisterTopics(listeningTopics);
+    }
     dataProvider.logoutOfEazyPMS();
   }
 

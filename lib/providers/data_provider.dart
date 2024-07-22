@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'dart:ffi';
+import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -8,6 +11,7 @@ import '../helpers/globals.dart';
 import '../helpers/utils.dart';
 import '../modals/profile/dineazy.profile.dart';
 import '../modals/profile/eazypms.profile.dart';
+import '../service/redis_service.dart';
 
 class DataProvider extends ChangeNotifier {
   static const _dineazyProfileKey = "dineazy-user-profile";
@@ -63,11 +67,29 @@ class DataProvider extends ChangeNotifier {
       )
       .length;
 
-  int getListeningTopicCountOfProduct(String product) => _listeningTopics.keys
-      .where(
-        (topic) => topic.contains(product) && _listeningTopics[topic] == ForegroundServiceStatus.running,
-      )
-      .length;
+  Iterable<String> getListeningTopicsOfProduct(String product) => _listeningTopics.keys.where(
+        (topic) => topic.contains(product.toLowerCase()) && _listeningTopics[topic] == ForegroundServiceStatus.running,
+      );
+
+  Future<void> unregisterTopics(Iterable<String> topics) async {
+    debugPrint("DataProvider.unregisterTopics: 🐞$topics");
+    if (isForegroundServiceMode) {
+      RedisService redisService = RedisService();
+      await Future.wait(
+        topics.map(
+          (topic) => redisService.stopListeningOnTopic(topic).then(
+                (value) => _listeningTopics.remove(topic),
+              ),
+        ),
+      );
+    } else {
+      SendPort? port = IsolateNameServer.lookupPortByName(headlessPortName);
+      debugPrint("DataProvider.unregisterTopics: 🐞${port?.nativePort}");
+      for (String topic in topics) {
+        port?.send([topic, "unsubscribe"]);
+      }
+    }
+  }
 
   Map<String, ForegroundServiceStatus> get listeningTopics => _listeningTopics;
 

@@ -54,7 +54,7 @@ class ConfirmLogout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DataProvider dataProvider = Provider.of<DataProvider>(context);
-    int listeningTopicsCount = dataProvider.getListeningTopicCountOfProduct(product.toLowerCase());
+    int listeningTopicsCount = dataProvider.getListeningTopicsOfProduct(product).length;
 
     return Padding(
       padding: const EdgeInsets.all(24.0),
@@ -82,13 +82,13 @@ class ConfirmLogout extends StatelessWidget {
             children: [
               PrimaryButton(
                 text: "Close",
-                onTap: () {},
+                onTap: () => Navigator.pop(context, false),
                 textColor: Colors.white,
                 color: Colors.red.shade700,
               ),
               PrimaryButton(
                 text: "Yes, Logout",
-                onTap: () {},
+                onTap: () => Navigator.pop(context, true),
               ),
             ],
           ),
