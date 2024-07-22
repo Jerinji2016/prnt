@@ -150,6 +150,8 @@ class HomeViewModal extends ChangeNotifier {
       String action = _topicCache[topic]!;
       port.send([topic, action]);
     }
+
+    _topicCache.clear();
   }
 
   void _onData(dynamic data) {
@@ -184,6 +186,7 @@ class HomeViewModal extends ChangeNotifier {
 
       if (!hasRunningStatus) {
         debugPrint("HomeViewModal._listenOnBackground: 🐞Not listening to any topics");
+        dataProvider.clearListeningTopic();
         HeadlessService.stop();
       }
 

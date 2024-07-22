@@ -89,6 +89,11 @@ class DataProvider extends ChangeNotifier {
     }
   }
 
+  void clearListeningTopic() {
+    _listeningTopics.clear();
+    notifyListeners();
+  }
+
   Map<String, ForegroundServiceStatus> get listeningTopics => _listeningTopics;
 
   DineazyProfile? _dineazyProfile;
