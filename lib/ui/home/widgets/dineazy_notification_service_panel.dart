@@ -32,7 +32,7 @@ class _DineazyNotificationServicePanelState extends State<DineazyNotificationSer
   @override
   Widget build(BuildContext context) {
     HomeViewModal viewModal = Provider.of<HomeViewModal>(context);
-    ForegroundServiceStatus status = viewModal.getTopicStatus(context, topic);
+    ForegroundServiceStatus status = viewModal.getTopicStatus(context, topic, listen: true);
     bool isServiceStopped = status == ForegroundServiceStatus.stopped;
 
     return Material(

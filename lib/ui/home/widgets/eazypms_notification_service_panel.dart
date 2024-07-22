@@ -50,9 +50,7 @@ class _RevenueCenterServiceTileState extends State<RevenueCenterServiceTile> {
     viewModal.toggleTopicListeningStatus(context, topic);
   }
 
-  Widget _buildStatusText() {
-    HomeViewModal viewModal = Provider.of<HomeViewModal>(context);
-    ForegroundServiceStatus status = viewModal.getTopicStatus(context, topic);
+  Widget _buildStatusText(ForegroundServiceStatus status) {
 
     return Row(
       children: [
@@ -78,7 +76,7 @@ class _RevenueCenterServiceTileState extends State<RevenueCenterServiceTile> {
   @override
   Widget build(BuildContext context) {
     HomeViewModal viewModal = Provider.of<HomeViewModal>(context);
-    ForegroundServiceStatus status = viewModal.getTopicStatus(context, topic);
+    ForegroundServiceStatus status = viewModal.getTopicStatus(context, topic, listen: true);
     bool isServiceStopped = status == ForegroundServiceStatus.stopped;
 
     return Padding(
@@ -117,7 +115,7 @@ class _RevenueCenterServiceTileState extends State<RevenueCenterServiceTile> {
                         ),
                       ],
                     ),
-                    _buildStatusText(),
+                    _buildStatusText(status),
                   ],
                 ),
               ),

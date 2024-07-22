@@ -126,8 +126,8 @@ class HomeViewModal extends ChangeNotifier {
     return _listenOnForeground(context, topic);
   }
 
-  ForegroundServiceStatus getTopicStatus(BuildContext context, String topic) {
-    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
+  ForegroundServiceStatus getTopicStatus(BuildContext context, String topic, {bool listen = false}) {
+    DataProvider dataProvider = Provider.of<DataProvider>(context, listen: listen);
     return dataProvider.listeningTopics[topic] ?? ForegroundServiceStatus.stopped;
   }
 
