@@ -38,6 +38,7 @@ void showToast(BuildContext context, String message, {Color? color}) => Scaffold
             ),
           ),
         ),
+        elevation: 10.0,
         backgroundColor: color ?? Theme.of(context).colorScheme.primary,
         behavior: SnackBarBehavior.floating,
       ),
