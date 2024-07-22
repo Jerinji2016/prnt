@@ -46,8 +46,8 @@ class DataProvider extends ChangeNotifier {
       _listeningTopics[key] = status;
     });
 
-    isForegroundServiceRunning().then((value){
-      if(!value) {
+    isForegroundServiceRunning().then((value) {
+      if (!value) {
         sharedPreferences.remove(_listeningTopicsKey);
         _listeningTopics.clear();
         notifyListeners();
@@ -79,10 +79,7 @@ class DataProvider extends ChangeNotifier {
 
   void updateTopicStatus(String topic, ForegroundServiceStatus status) {
     _listeningTopics[topic] = status;
-    Map json = {};
-    _listeningTopics.forEach((key, value) {
-      json[key] = value.index;
-    });
+    Map json = _listeningTopics.map((key, value) => MapEntry(key, value.index));
     sharedPreferences.setString(_listeningTopicsKey, jsonEncode(json));
   }
 
