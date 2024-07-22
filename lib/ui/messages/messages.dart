@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../db/message.table.dart';
@@ -149,35 +150,34 @@ class _MessageTileState extends State<MessageTile> {
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: Colors.grey[500]!),
+          bottom: BorderSide(color: Theme.of(context).dividerColor),
         ),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Message ${widget.index + 1}",
+                  "Message ${widget.record.id}",
                   style: const TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                Text(
+                  "Printer: ${message.data.printer.value}",
+                  style: const TextStyle(fontSize: 14.0),
+                ),
                 const SizedBox(height: 16.0),
                 Text(
-                  "Printer: ${message.data.printer.name}",
-                  style: const TextStyle(
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  "Value: ${message.data.printer.value}",
-                  style: const TextStyle(
-                    fontSize: 12.0,
+                  DateFormat("dd MMM yyyy, hh:mm a").format(message.timestamp),
+                  style: TextStyle(
+                    fontSize: 10.0,
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).disabledColor,
                   ),
                 ),
               ],

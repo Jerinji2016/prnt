@@ -24,7 +24,7 @@ class MessageTable {
   Future<MessageRecordIterable> getAll() async {
     MessageRecordList messages = [];
 
-    final cursor = await _db.query(tableName);
+    final cursor = await _db.query(tableName, orderBy: "${MessageTable.timestamp} DESC");
     for (Map<String, dynamic> json in cursor) {
       messages.add(MessageRecord.fromJson(json));
     }
