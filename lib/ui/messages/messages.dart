@@ -1,5 +1,4 @@
 import 'dart:isolate';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -15,6 +14,7 @@ import '../../modals/print_message_data.dart';
 import '../../providers/data_provider.dart';
 import '../../service/redis_service.dart';
 import '../../widgets/primary_button.dart';
+import 'view_bill.bottom_sheet.dart';
 
 class MessagesScreen extends StatefulWidget {
   const MessagesScreen({super.key});
@@ -120,10 +120,8 @@ class _MessageTileState extends State<MessageTile> {
 
   PrintMessageData get message => widget.record.data;
 
-  void _onViewTapped(BuildContext context, PrintMessageData message) => showModalBottomSheet(
-        context: context,
-        builder: (context) => ViewReceiptDelegate(data: message.data),
-      );
+  void _onViewTapped(BuildContext context, PrintMessageData message) =>
+      ViewBillBottomSheet.show(context, data: message.data);
 
   void _onPrintTapped(PrintMessageData message) async {
     setState(() => _isPrintLoading = true);
@@ -206,55 +204,6 @@ class _MessageTileState extends State<MessageTile> {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class ViewReceiptDelegate extends StatefulWidget {
-  final PrintData data;
-
-  const ViewReceiptDelegate({
-    super.key,
-    required this.data,
-  });
-
-  @override
-  State<ViewReceiptDelegate> createState() => _ViewReceiptDelegateState();
-}
-
-class _ViewReceiptDelegateState extends State<ViewReceiptDelegate> {
-  Uint8List _imageBytes = Uint8List(0);
-
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    SchedulerBinding.instance.addPostFrameCallback(
-      (_) => contentToImage(widget.data.template).then(
-        (bytes) => setState(() {
-          _imageBytes = Uint8List.fromList(bytes);
-          _isLoading = false;
-        }),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Image.memory(
-        _imageBytes,
-        width: MediaQuery.of(context).size.shortestSide,
-        fit: BoxFit.contain,
-        alignment: Alignment.center,
       ),
     );
   }
