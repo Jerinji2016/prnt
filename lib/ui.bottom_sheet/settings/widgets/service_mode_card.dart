@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../enums/foreground_service_status.dart';
 import '../../../enums/service_mode.dart';
 import '../../../providers/data_provider.dart';
 import '../../../widgets/primary_card.dart';
@@ -56,6 +57,12 @@ class _ServiceModeCardState extends State<ServiceModeCard> {
   @override
   Widget build(BuildContext context) {
     DataProvider dataProvider = Provider.of<DataProvider>(context);
+    int runningServicesCount = dataProvider.listeningTopics.values
+        .where(
+          (value) => value == ForegroundServiceStatus.running,
+        )
+        .length;
+    bool hasServicesRunning = runningServicesCount > 0;
 
     return PrimaryCard(
       child: Column(
@@ -66,9 +73,9 @@ class _ServiceModeCardState extends State<ServiceModeCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Service Mode",
-                      style: TextStyle(
+                    Text(
+                      "Service Mode (${dataProvider.isBackgroundServiceMode ? "Background" : "Foreground"})",
+                      style: const TextStyle(
                         fontSize: 16.0,
                         fontWeight: FontWeight.w500,
                       ),
@@ -85,10 +92,24 @@ class _ServiceModeCardState extends State<ServiceModeCard> {
               ),
               Switch(
                 value: dataProvider.isBackgroundServiceMode,
-                onChanged: (value) => _onSwitchChanged(context, value),
+                onChanged: (hasServicesRunning) ? null : (value) => _onSwitchChanged(context, value),
               ),
             ],
           ),
+          if (hasServicesRunning)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(
+                "$runningServicesCount service(s) are still running in background. "
+                "Please turn off them to enable this option",
+                style: TextStyle(
+                  fontSize: 12.0,
+                  height: 1.2,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red.shade700.withOpacity(0.8),
+                ),
+              ),
+            ),
           AnimatedSize(
             duration: const Duration(milliseconds: 300),
             curve: Curves.ease,
