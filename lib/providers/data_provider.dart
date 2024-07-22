@@ -57,6 +57,18 @@ class DataProvider extends ChangeNotifier {
 
   final Map<String, ForegroundServiceStatus> _listeningTopics = {};
 
+  int get listeningTopicsCount => _listeningTopics.values
+      .where(
+        (element) => element == ForegroundServiceStatus.running,
+      )
+      .length;
+
+  int getListeningTopicCountOfProduct(String product) => _listeningTopics.keys
+      .where(
+        (topic) => topic.contains(product) && _listeningTopics[topic] == ForegroundServiceStatus.running,
+      )
+      .length;
+
   Map<String, ForegroundServiceStatus> get listeningTopics => _listeningTopics;
 
   DineazyProfile? _dineazyProfile;

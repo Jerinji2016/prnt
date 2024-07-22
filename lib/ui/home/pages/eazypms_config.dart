@@ -5,6 +5,7 @@ import '../../../apis/eazypms.impl.dart';
 import '../../../helpers/utils.dart';
 import '../../../modals/profile/eazypms.profile.dart';
 import '../../../providers/data_provider.dart';
+import '../../../ui.bottom_sheet/confirm_logout.dart';
 import '../../login/login.dart';
 import '../../login/login.interface.dart';
 import '../widgets/eazypms_notification_service_panel.dart';
@@ -45,8 +46,10 @@ class EazyPMSConfigPage extends StatelessWidget implements LoginInterface, Logou
   }
 
   @override
-  void onLogoutTapped(BuildContext context) {
+  void onLogoutTapped(BuildContext context) async {
     DataProvider dataProvider = Provider.of<DataProvider>(context, listen: false);
+    bool? confirm = await ConfirmLogout.show(context, "eazyPMS");
+    if (!(confirm ?? false)) return;
     dataProvider.logoutOfEazyPMS();
   }
 

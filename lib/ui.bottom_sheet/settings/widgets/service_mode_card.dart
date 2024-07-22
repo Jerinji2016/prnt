@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../enums/foreground_service_status.dart';
 import '../../../enums/service_mode.dart';
 import '../../../providers/data_provider.dart';
 import '../../../widgets/primary_card.dart';
@@ -57,11 +56,7 @@ class _ServiceModeCardState extends State<ServiceModeCard> {
   @override
   Widget build(BuildContext context) {
     DataProvider dataProvider = Provider.of<DataProvider>(context);
-    int runningServicesCount = dataProvider.listeningTopics.values
-        .where(
-          (value) => value == ForegroundServiceStatus.running,
-        )
-        .length;
+    int runningServicesCount = dataProvider.listeningTopicsCount;
     bool hasServicesRunning = runningServicesCount > 0;
 
     return PrimaryCard(
