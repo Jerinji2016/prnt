@@ -81,6 +81,7 @@ class DataProvider extends ChangeNotifier {
     _listeningTopics[topic] = status;
     Map json = _listeningTopics.map((key, value) => MapEntry(key, value.index));
     sharedPreferences.setString(_listeningTopicsKey, jsonEncode(json));
+    notifyListeners();
   }
 
   void saveDineazyData(DineazyProfile profile) {
