@@ -36,6 +36,7 @@ class RedisService {
     await cmd.send_object(['AUTH', password]);
     final pubSub = PubSub(cmd);
     pubSub.subscribe([topic]);
+    pubSub.subscribe([topic.replaceAll('kot', 'bill')]);
 
     final stream = pubSub.getStream();
     await for (final msg in stream) {
@@ -66,6 +67,7 @@ class RedisService {
     await cmd.send_object(['AUTH', password]);
     final pubSub = PubSub(cmd);
     pubSub.unsubscribe([topic]);
+    pubSub.unsubscribe([topic.replaceAll('kot', 'bill')]);
     debugPrint("RedisService._stopListeningOnTopic: ✅Unsubscribed successfully ($topic)");
   }
 
